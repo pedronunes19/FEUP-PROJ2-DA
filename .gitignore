@@ -1,0 +1,10 @@
+#cmake
+cmake-build-debug/
+build/
+
+# IDE
+.vscode/
+.idea/
+
+# Doxygen
+docs/
