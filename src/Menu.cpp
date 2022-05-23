@@ -1,4 +1,4 @@
-#include "../include/menu.h"
+#include "../include/Menu.h"
 
 bool Menu::exitApplication = false;
 
@@ -53,13 +53,51 @@ void Menu::init() {
     }
 }
 
+
+unsigned long Menu::getUnsignedInput(std::string prompt, unsigned long min, unsigned long max) {
+    std::string input;
+    unsigned long number;
+    bool done = false;
+
+    do {
+        input = getStringInput(prompt);
+
+        try {
+            number = stoul(input);
+            done = true;
+        } catch (std::invalid_argument) {
+            done = false;
+        }
+    } while (!done || !inRange(number, min, max));
+
+    return number;
+}
+
+std::string Menu::getStringInput(std::string prompt) {
+    std::string input{};
+
+    std::getline(std::cin, input);
+    utils::file::normalizeInput(input);
+
+    if (std::cin.eof())
+        Menu::exitApplication = true;
+
+    return input;
+}
+
+bool Menu::inRange(unsigned long n, unsigned long min,
+                            unsigned long max) {
+    return (n <= max) && (n >= min);
+}
+
 int Menu::showAdminMenu() {
 
     int option;
 
-    std::cout << "\tHello, what would you like to do?\n\n";
-    std::cout << "\t[1] Back\n\n";
-    std::cout << "\t> ";
+    std::cout << "\tHello, what would you like to do?\n\n"
+                 "\t[1] Back\n\n"
+                 "\t> ";
+
     std::cin >> option;
 
     if (!std::cin)
@@ -74,9 +112,10 @@ int Menu::showClientMenu() {
 
     int option;
 
-    std::cout << "\tHello, what would you like to do?\n\n";
-    std::cout << "\t[1] Back\n\n";
-    std::cout << "\t> ";
+    std::cout << "\tHello, what would you like to do?\n\n"
+                 "\t[1] Back\n\n"
+                 "\t> ";
+
     std::cin >> option;
 
     if (!std::cin)
@@ -104,12 +143,6 @@ int Menu::showInitialMenu(const std::string& busCompany) {
     return option;
 }
 
-void Menu::waitForPrompt(const std::string &prompt) {
-    std::cout << prompt << std::endl;
-    std::cin.get();
-    if (std::cin.peek() == '\n') std::cin.ignore(100, '\n'); // 100 chars should be enough to ignore
-}
-
 void Menu::endProgram() {
-    Menu::waitForPrompt("\tProgram terminated, see you soon :) [press ENTER to quit]");
+    utils::file::waitForEnter();
 }

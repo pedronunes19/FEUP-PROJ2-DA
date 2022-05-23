@@ -2,6 +2,7 @@
 #define DA_PROJ_2_MENU_H
 
 #include <iostream>
+#include "utils.h"
 /**
  * @brief The application's menu.
  */
@@ -28,12 +29,6 @@ class Menu {
         CLIENT_BACK = 1
     };
 
-    /**
-     * @brief Waits for user input (new line) to progress
-     * @param prompt
-     */
-    static void waitForPrompt(const std::string& prompt);
-
 public:
     /**
      * @brief Initialize the program
@@ -41,8 +36,37 @@ public:
     static void init();
 
     /**
+     * @brief transforms string input into unsigned integer, creates an error message if it fails
+     *
+     * @param prompt shown to the user
+     * @param min the left bound of the limit (inclusive)
+     * @param max the right bound of the limit (inclusive)
+     * @return the user input, as an unsigned integer
+     */
+    unsigned long getUnsignedInput(std::string prompt, unsigned long min = 0,
+                                   unsigned long max = ULONG_MAX);
+
+    /**
+     * @brief gets a line from stdin and normalizes it
+     *
+     * @param prompt shown to the user
+     * @return the user input
+     */
+    std::string getStringInput(std::string prompt);
+
+    /**
+     * @brief checks if an unsigned integer n is inside the limit [min, max]
+     *
+     * @param n the number to be checked
+     * @param min the left bound of the limit
+     * @param max the right bound of the limit
+     * @return boolean of the logical result of: min <= n <= max
+     */
+    bool inRange(unsigned long n, unsigned long min, unsigned long max);
+
+    /**
      * @brief Shows the initial menu on screen
-     * @param CompanyName Name of the company we are travelling with (displayed on screen)
+     * @param CompanyName Name of the Company we are travelling with (displayed on screen)
      * @return User option (Client/Admin/EXit)
      */
     static int showInitialMenu(const std::string& CompanyName);
@@ -60,13 +84,6 @@ public:
      * @brief Close the program
      */
     static void endProgram();
-    /**
-     * @brief Set of functions that call the respective Company methods with the same name.
-     * @param deliveryCompany The Company tasked with the deliveries.
-     */
-
-
-
 };
 
 #endif //DA_PROJ_2_MENU_H
