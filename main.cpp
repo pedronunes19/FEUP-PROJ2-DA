@@ -1,10 +1,9 @@
 #include <iostream>
-#include "include/menu.h"
+#include "include/Menu.h"
+#include "include/Company.h"
 
 int main(){
-    std::cout << "Hello World" << std::endl;
-
+    Company company;
     Menu::init();
-
     return 0;
 }
