@@ -2,6 +2,7 @@
 #define DA_PROJ_2_MENU_H
 
 #include <iostream>
+#include <climits>
 #include "utils.h"
 /**
  * @brief The application's menu.

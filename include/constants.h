@@ -1,5 +1,5 @@
-#ifndef DA_PROJ_1_CONSTANTS_H
-#define DA_PROJ_1_CONSTANTS_H
+#ifndef DA_PROJ_2_CONSTANTS_H
+#define DA_PROJ_2_CONSTANTS_H
 
 #include <string>
 

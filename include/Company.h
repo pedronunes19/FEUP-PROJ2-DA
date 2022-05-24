@@ -1,14 +1,15 @@
-#ifndef DA_PROJ_1_COMPANY_H
-#define DA_PROJ_1_COMPANY_H
+#ifndef DA_PROJ_2_COMPANY_H
+#define DA_PROJ_2_COMPANY_H
 
 #include <string>
 #include <fstream>
 
 #include "utils.h"
 #include "constants.h"
+#include "graph.h"
 
 class Company {
-    // TODO: graph
+    Graph graph;
     static void readDataset(std::string dataset);
 public:
     Company();
@@ -16,4 +17,4 @@ public:
 };
 
 
-#endif //DA_PROJ_1_COMPANY_H
+#endif
