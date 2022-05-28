@@ -53,10 +53,18 @@ struct Node {
      * @brief The identifier of the node.
      */
     double id;
-
-    Node(double id) {
-        id = id;
-    };
+    /**
+     * @brief The distance between this node and its predecessor.
+     *
+     * @note Set after running an algorithm.
+     */
+    double dist{};
+    /**
+     * @brief This node's predecessor.
+     *
+     * @note Set after running an algorithm.
+     */
+    std::string pred{};
 };
 
 /**
@@ -69,7 +77,9 @@ class Graph {
      * The keys are each node's stop code and the values are the nodes
      * themselves.
      */
-    std::vector<Node> nodes;
+    std::unordered_map<std::string, Node> nodes;
+
+    int dataset_max;
 
 public:
     /**
@@ -103,7 +113,7 @@ public:
     /**
      * @return This graph's nodes.
      */
-    std::vector<Node> getNodes() { return nodes; };
+    std::unordered_map<std::string, Node>  getNodes() { return nodes; };
 
     /**
      * @brief Get the node with the specified code.
@@ -111,21 +121,48 @@ public:
      * @param id The stop code.
      * @return The node.
      */
-    Node &getNode(unsigned long id) { return nodes.at(id); };
+    Node &getNode(std::string id) { return nodes[id]; };
 
-    /**
-     * @brief Populates this graph with info from files and by foot edges.
-     */
-    void populate();
+    int getDatasetMax();
+
 
     /**
      * @brief Populates this graph with info from files and by foot edges.
      *
      * @param dataset The dataset to be read and populate the dataset.
      */
-    void populate(std::string dataset);
+    void populate(std::string dataset = NORMAL_DATASET_1);
 
     void addNodes(unsigned long nodes);
+
+    /**
+     * @brief Applies the bfs (breadth-first search) algorithm. [O(|V| + |E|)]
+     *
+     * @param src The code of the source node.
+     * @param dest The code of the destination node.
+     */
+    void bfs(const int &src, const int &dest, std::vector<int> &path);
+
+    /**
+     * @brief Applies the bfs (breadth-first search) algorithm. [O(|V| + |E|)]
+     *
+     * @param src The code of the source node.
+     * @param dest The code of the destination node.
+     */
+    bool bfsResidual(std::vector<Node> residual, const int &src, const int &dest, std::vector<int> &path);
+
+    double fordFulk(int s, int t, std::vector<int> &path);
+
+    /**
+     * @brief Applies the regular dijkstra algorithm. [O(|E| log(|V|))]
+     *
+     * @param src The code of the source node.
+     * @param dest The code of the destination node.
+     * @param f The filter to use in the creation of the path.
+     */
+    void dijkstra(const int src, const int dest);
+
+    std::list<Node> maximizeJointAny(const int src, const int dest);
 };
 
 #endif
