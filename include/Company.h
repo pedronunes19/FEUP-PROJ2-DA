@@ -10,10 +10,12 @@
 
 class Company {
     Graph graph;
-    static void readDataset(std::string dataset);
 public:
     Company();
     void changeDataset(std::string dataset);
+    double graphFord(int s, int t, std::vector<int> &path);
+    int getDatasetMax();
+    std::list<Node> maximizeJointAny(int s, int t);
 };
 
 

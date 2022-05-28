@@ -1,8 +1,6 @@
 #include <iostream>
 #include "../include/Company.h"
 
-void Company::readDataset(std::string dataset) {
-}
 
 Company::Company() {
     Graph();
@@ -10,5 +8,18 @@ Company::Company() {
 }
 
 void Company::changeDataset(std::string dataset) {
-    readDataset(dataset);
+    graph.populate(dataset);
+}
+
+double Company::graphFord(int s, int t, std::vector<int> &path) {
+    // return graph.fordFulk(s-1, t-1, path);
+    return 0;
+}
+
+std::list<Node> Company::maximizeJointAny(int s, int t) {
+    return graph.maximizeJointAny(s-1, t-1);
+}
+
+int Company::getDatasetMax() {
+    return graph.getDatasetMax();
 }

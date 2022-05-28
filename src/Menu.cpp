@@ -1,59 +1,5 @@
 #include "../include/Menu.h"
 
-bool Menu::exitApplication = false;
-
-void Menu::init() {
-
-    // Company deliveryCompany{"GDC (Generic Delivery Company)"};
-
-    atexit(Menu::endProgram);
-
-    while (!Menu::exitApplication) {
-
-        std::cout << std::string(100, '\n');
-
-        int option = Menu::showInitialMenu("aaaaaaaaaaaaaaaaaaa");
-
-        switch (option) {
-            case CLIENT:
-            case ADMIN:
-
-                if (option == CLIENT) {
-
-                    option = Menu::showClientMenu();
-
-                    switch (option) {
-                        case CLIENT_BACK:
-                            break;
-                        default:
-                            std::cout << "Invalid option, returning to main menu\n\n";
-                            break;
-                    }
-
-                } else {
-
-                    option = Menu::showAdminMenu();
-
-                    switch (option) {    
-                        case ADMIN_BACK:
-                            break;
-                        default:
-                            std::cout << "Invalid option, returning to main menu\n\n";
-                            break;
-                    }
-                }
-                break;
-            case LEAVE:
-                Menu::exitApplication = true;
-                break;
-            default:
-                std::cout << "\tInvalid option chosen!\n\n";
-                break;
-        }
-    }
-}
-
-
 unsigned long Menu::getUnsignedInput(std::string prompt, unsigned long min, unsigned long max) {
     std::string input;
     unsigned long number;
@@ -74,13 +20,14 @@ unsigned long Menu::getUnsignedInput(std::string prompt, unsigned long min, unsi
 }
 
 std::string Menu::getStringInput(std::string prompt) {
+    std::cout << prompt;
     std::string input{};
 
     std::getline(std::cin, input);
     utils::file::normalizeInput(input);
 
     if (std::cin.eof())
-        Menu::exitApplication = true;
+        throw Exit();
 
     return input;
 }
@@ -90,59 +37,78 @@ bool Menu::inRange(unsigned long n, unsigned long min,
     return (n <= max) && (n >= min);
 }
 
-int Menu::showAdminMenu() {
+void Menu::showMainMenu() {
 
-    int option;
+    std::string prompt = "Generic Company that does company stuff\n\n"
+                         "[1] Joint Planning\n"
+                         "[2] Separate Planning\n"
+                         "[0] Exit\n"
+                         ">";
 
-    std::cout << "\tHello, what would you like to do?\n\n"
-                 "\t[1] Back\n\n"
-                 "\t> ";
+    unsigned long option = getUnsignedInput(prompt, 0, 2);
 
-    std::cin >> option;
-
-    if (!std::cin)
-        exit(0);
-
-    std::cout.flush();
-
-    return option;
+    switch(option) {
+        case 1:
+            MOpt = JOINT_PLAN;
+            break;
+        case 2:
+            MOpt = SEPARATE_PLAN;
+            break;
+        case 0:
+            MOpt = EXIT;
+            break;
+    }
 }
 
-int Menu::showClientMenu() {
+void Menu::showJointPlanMenu() {
+    unsigned long start, end;
+    double max_flow;
+    std::list<Node> path;
 
-    int option;
+    std::string prompt = "[1] Maximize group\n"
+                         "[2] Minimize transport switches\n"
+                         "[0] Exit\n"
+                         ">";
+    unsigned long option = getUnsignedInput(prompt, 0, 2);
 
-    std::cout << "\tHello, what would you like to do?\n\n"
-                 "\t[1] Back\n\n"
-                 "\t> ";
-
-    std::cin >> option;
-
-    if (!std::cin)
-        exit(0);
-
-    std::cout.flush();
-
-    return option;
+    switch(option) {
+        case 1:
+            start = getUnsignedInput("Start:", 0, company.getDatasetMax());
+            end = getUnsignedInput("End:", 0, company.getDatasetMax());
+            path = company.maximizeJointAny(start, end);
+            for (int i{0}; i < path.size(); i++) {
+                Node n = path.front();
+                path.pop_front();
+                std::cout << n.id  << "\n";
+            }
+            std::cout << std::flush;
+            utils::file::waitForEnter();
+            MOpt = MAIN_MENU;
+            break;
+        case 2:
+            break;
+        case 0:
+            MOpt = MAIN_MENU;
+            break;
+    }
 }
 
-int Menu::showInitialMenu(const std::string& busCompany) {
-
-    int option;
-
-    std::cout << "\t\tWelcome to " << busCompany << "\n\n";
-    std::cout << "\t[1] Travel\n\t[2] Admin\n\t[3] Exit\n\n";
-    std::cout << "\t> ";
-    std::cin >> option;
-
-    if (!std::cin)
-        exit(0);
-
-    std::cout.flush();
-
-    return option;
+void Menu::show() {
+    switch (MOpt) {
+        case MAIN_MENU:
+            showMainMenu();
+            break;
+        case JOINT_PLAN:
+            showJointPlanMenu();
+            break;
+        case SEPARATE_PLAN:
+            // separatePlan();
+            break;
+        case EXIT:
+            throw Exit();
+    }
 }
 
-void Menu::endProgram() {
+void Menu::showExit() {
     utils::file::waitForEnter();
 }

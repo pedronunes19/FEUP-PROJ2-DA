@@ -11,6 +11,11 @@
 
 #define MAX_CHARS_IGNORE std::numeric_limits <std::streamsize>::max()
 
+/**
+ * @brief Exception thrown when the user wants to exit the program.
+ */
+class Exit {};
+
 namespace utils::file {
 
     /**

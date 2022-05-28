@@ -1,9 +1,16 @@
-#include <iostream>
 #include "include/Menu.h"
-#include "include/Company.h"
 
 int main(){
     Company company;
-    Menu::init();
+    Menu menu = Menu(company);
+
+    try {
+        while (true) {
+            menu.show();
+        }
+    } catch (Exit) {
+        menu.showExit();
+    }
+
     return 0;
 }
