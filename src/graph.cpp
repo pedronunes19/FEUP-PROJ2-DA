@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <filesystem>
+
 #include <fstream>
 
 #include "../include/utils.h"
@@ -52,10 +52,10 @@ void Graph::addNodes(unsigned long num_nodes) {
         nodes.insert(std::pair<std::string, Node>(std::to_string(i), node));
     }
 }
-/*
+
 bool Graph::bfsResidual(std::vector<Node> residual, const int &src, const int &dest, std::vector<int> &path) {
     for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i)
-       // i->visited = false;
+        (*i).second.visited = false;
     std::queue<int> q;
     q.push(src);
     residual.at(src).visited = true;
@@ -85,7 +85,10 @@ bool Graph::bfsResidual(std::vector<Node> residual, const int &src, const int &d
 
 double Graph::fordFulk(int s, int t, std::vector<int> &path) {
 
-    // std::vector<Node> residual = nodes;
+    std::vector<Node> residual;
+    for (auto n: nodes){
+        residual.push_back(n.second);
+    }
 
     double mflow = 0;
 
@@ -119,7 +122,7 @@ double Graph::fordFulk(int s, int t, std::vector<int> &path) {
 int Graph::getDatasetMax() {
     return dataset_max;
 }
- */
+ 
 
 /*
 NOTE: EXTREMELY DANGEROUS CODE ACTUALLY CHANGE THIS IF YOU INTEND TO EVER RUN IT
@@ -128,6 +131,9 @@ NOTE: EXTREMELY DANGEROUS CODE ACTUALLY CHANGE THIS IF YOU INTEND TO EVER RUN IT
       the rest of the code should be working correctly
       good luck trying to fix this.
 
+
+THIS SHOULDN'T KILL YOUR PC NOW (I THINK)      
+*/
 void Graph::dijkstra(const int src, const int dest) {
     MinHeap<std::string, double> q(nodes.size(), "");
 
@@ -176,4 +182,3 @@ std::list<Node> Graph::maximizeJointAny(const int src, const int dest) {
     }
     return path;
 }
-*/
