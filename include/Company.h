@@ -16,6 +16,8 @@ public:
     double graphFord(int s, int t, std::vector<int> &path);
     int getDatasetMax();
     std::list<Node> maximizeJointAny(int s, int t);
+
+    std::unordered_map<std::string, Node> getGraph();
 };
 
 

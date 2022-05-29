@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include <fstream>
+#include <unistd.h>
 
 #include "../include/utils.h"
 #include "../include/constants.h"
@@ -138,12 +139,12 @@ void Graph::dijkstra(const int src, const int dest) {
     MaxHeap<std::string, double> q(nodes.size(), "");
 
     for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i) {
-        i->second.dist = -1; // change this to -1
+        i->second.cappd = 0;
         q.insert(i->first, -1);
         i->second.visited = false;
     }
 
-    nodes[std::to_string(src)].dist = INF; // change this to INF
+    nodes[std::to_string(src)].cappd = INF;
     q.increaseKey(std::to_string(src), INF);
     nodes[std::to_string(src)].pred = std::to_string(src);
 
@@ -159,10 +160,12 @@ void Graph::dijkstra(const int src, const int dest) {
             std::string vc = std::to_string(e.dest);
             Node &v = getNode(vc);
 
-            if (!v.visited && std::min(u.dist, e.capacity) > v.dist) {
-                v.dist = std::min(u.dist, e.capacity);
+            std::cout << u.id << " " << v.id << std::endl;
+
+            if (!v.visited && (std::min(u.cappd, e.capacity) > v.cappd)) {
+                v.cappd = std::min(u.cappd, e.capacity);
                 v.pred = std::to_string(u.id);
-                q.increaseKey(vc, v.dist);
+                q.increaseKey(vc, v.cappd);
             }
         }
     }
@@ -172,18 +175,15 @@ std::list<Node> Graph::maximizeJointAny(const int src, const int dest) {
     dijkstra(src, dest);
 
     std::list<Node> path{};
-    if (nodes[std::to_string(dest)].dist == INF)
+    if (nodes[std::to_string(dest)].cappd == INF)
         return path;
 
     path.push_back(getNode(std::to_string(dest)));
     std::string v = std::to_string(dest);
-    std::cout << "hey ignore this\n";
-    for (auto uh: nodes){
-        std::cout << "string: " << uh.first << " node id: " << uh.second.id << "\n";
-    }
-    while (v != std::to_string(src) && !v.empty()) {
+    while (v != std::to_string(src)) {
         v = nodes[v].pred;
         path.push_front(getNode(v));
     }
+
     return path;
 }

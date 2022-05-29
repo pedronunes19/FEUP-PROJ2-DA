@@ -65,6 +65,12 @@ struct Node {
      * @note Set after running an algorithm.
      */
     std::string pred{};
+    /**
+     * @brief The distance between this node and its predecessor.
+     *
+     * @note Set after running an algorithm.
+     */
+    double cappd{};
 };
 
 /**
