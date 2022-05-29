@@ -76,11 +76,17 @@ void Menu::showJointPlanMenu() {
             start = getUnsignedInput("Start:", 0, company.getDatasetMax());
             end = getUnsignedInput("End:", 0, company.getDatasetMax());
             path = company.maximizeJointAny(start, end);
-            for (int i{0}; i < path.size(); i++) {
-                Node n = path.front();
-                path.pop_front();
-                std::cout << n.id  << "\n";
+            if (!path.size()) {
+                std::cout << "No path found!" << std::endl;
+                utils::file::waitForEnter();
+                MOpt = MAIN_MENU;
+                break;
             }
+
+            for (auto const& i : path) {
+                std::cout << i.id << "\n";
+            }
+            
             std::cout << std::flush;
             utils::file::waitForEnter();
             MOpt = MAIN_MENU;

@@ -160,8 +160,6 @@ void Graph::dijkstra(const int src, const int dest) {
             std::string vc = std::to_string(e.dest);
             Node &v = getNode(vc);
 
-            std::cout << u.id << " " << v.id << std::endl;
-
             if (!v.visited && (std::min(u.cappd, e.capacity) > v.cappd)) {
                 v.cappd = std::min(u.cappd, e.capacity);
                 v.pred = std::to_string(u.id);
@@ -175,7 +173,7 @@ std::list<Node> Graph::maximizeJointAny(const int src, const int dest) {
     dijkstra(src, dest);
 
     std::list<Node> path{};
-    if (nodes[std::to_string(dest)].cappd == INF)
+    if (nodes[std::to_string(dest)].cappd == 0)
         return path;
 
     path.push_back(getNode(std::to_string(dest)));
