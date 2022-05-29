@@ -63,7 +63,7 @@ void Menu::showMainMenu() {
 void Menu::showJointPlanMenu() {
     unsigned long start, end;
     double max_flow;
-    std::list<Node> path;
+    std::list<Node> path, path2;
 
     std::string prompt = "[1] Maximize group\n"
                          "[2] Minimize transport switches\n"
@@ -92,6 +92,35 @@ void Menu::showJointPlanMenu() {
             MOpt = MAIN_MENU;
             break;
         case 2:
+            start = getUnsignedInput("Start:", 1, company.getDatasetMax());
+            end = getUnsignedInput("End:", 1, company.getDatasetMax());
+            company.minimizeJointTrans(start, end, path, path2);
+
+            if (!path.size()) {
+                std::cout << "No path found when maximizing group dimension!" << std::endl;
+            } else {
+                std::cout << "Maximizing group dimensions:" << std::endl;
+                for (auto const& i : path) {
+                    std::cout << i.id << "\n";
+                }
+            }
+
+            if (!path2.size()) {
+                std::cout << "No path found when minizing vehicle changes!" << std::endl;
+            } else {
+                std::cout << "Minimizing vehicle changes:" << std::endl;
+                for (auto const& j : path2) {
+                    std::cout << j.id << "\n";
+                }
+            }
+
+            if (path.size() == path2.size()) {
+                std::cout << "The paths found have the same amount of vehicle changes! We recommend the one maximizing the group dimensions!" << std::endl;
+            }
+
+            std::cout << std::flush;
+            utils::file::waitForEnter();
+            MOpt = MAIN_MENU;
             break;
         case 0:
             MOpt = MAIN_MENU;

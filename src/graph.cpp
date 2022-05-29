@@ -9,14 +9,14 @@
 
 // Add edge from source to destination with a certain weight
 void Graph::addEdge(Node &src, Node &dest, const double &capacity,
-                    const double &distance) {
-    src.adj.push_back({dest.id, distance, capacity});
+                    const double &duration) {
+    src.adj.push_back({dest.id, duration, capacity});
 }
 
 // Add edge from source to destination with a certain weight
 void Graph::addEdge(const int &src, const int &dest,
-                    const double &capacity, const double &distance) {
-    addEdge(nodes[std::to_string(src)], nodes[std::to_string(dest)], capacity, distance);
+                    const double &capacity, const double &duration) {
+    addEdge(nodes[std::to_string(src)], nodes[std::to_string(dest)], capacity, duration);
 }
 
 void Graph::populate(std::string dataset) {
@@ -184,4 +184,61 @@ std::list<Node> Graph::maximizeJointAny(const int src, const int dest) {
     }
 
     return path;
+}
+
+void Graph::minimizeJointTrans(const int src, const int dest, std::list<Node> &path1, std::list<Node> &path2) {
+    dijkstra(src, dest);
+
+    if (nodes[std::to_string(dest)].cappd != 0) {
+        path1.push_back(getNode(std::to_string(dest)));
+        std::string v = std::to_string(dest);
+        while (v != std::to_string(src)) {
+            v = nodes[v].pred;
+            path1.push_front(getNode(v));
+        }
+    }
+
+    dijkstraTrans(src, dest);
+
+    if (nodes[std::to_string(dest)].dur != 0) {
+        path2.push_back(getNode(std::to_string(dest)));
+        std::string v = std::to_string(dest);
+        while (v != std::to_string(src)) {
+            v = nodes[v].pred;
+            path2.push_front(getNode(v));
+        }
+    }
+}
+void Graph::dijkstraTrans(const int src, const int dest){
+    MinHeap<std::string, double> q(nodes.size(), "");
+
+    for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i) {
+        i->second.dur = INF;
+        q.insert(i->first, INF);
+        i->second.visited = false;
+    }
+
+    nodes[std::to_string(src)].dur = 0;
+    q.decreaseKey(std::to_string(src), 0);
+    nodes[std::to_string(src)].pred = src;
+
+    while (q.getSize() > 0) {
+        std::string uc = q.removeMin();
+        Node &u = getNode(uc);
+        u.visited = true;
+
+        for (auto e : u.adj) {
+
+            std::string vc = std::to_string(e.dest);
+            Node &v = getNode(vc);
+
+            double w = u.dur + e.duration + (v.id != u.id) * 1000;
+
+            if (!v.visited && w < v.dur) {
+                v.dur = w;
+                q.decreaseKey(vc, v.dur);
+                v.pred = uc;
+            }
+        }
+    }
 }

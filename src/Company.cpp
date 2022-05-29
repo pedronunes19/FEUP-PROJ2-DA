@@ -27,3 +27,7 @@ int Company::getDatasetMax() {
 std::unordered_map<std::string, Node> Company::getGraph() {
     return graph.getNodes();
 }
+
+void Company::minimizeJointTrans(int s, int t, std::list<Node> &path1, std::list<Node> &path2) {
+    graph.minimizeJointTrans(s, t, path1, path2);
+}

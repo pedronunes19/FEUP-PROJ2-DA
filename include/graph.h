@@ -6,6 +6,7 @@ struct Edge;
 struct Node;
 
 #include "maxHeap.h"
+#include "minHeap.h"
 
 #include <deque>
 #include <iostream>
@@ -28,7 +29,7 @@ struct Edge {
     /**
      * @brief The distance between the two nodes.
      */
-    double distance;
+    double duration;
     /**
      * @brief The capacity between the two nodes.
      */
@@ -58,7 +59,7 @@ struct Node {
      *
      * @note Set after running an algorithm.
      */
-    double dist{};
+    double dur{};
     /**
      * @brief This node's predecessor.
      *
@@ -168,7 +169,18 @@ public:
      */
     void dijkstra(const int src, const int dest);
 
+    /**
+     * @brief Applies the regular dijkstra algorithm. [O(|E| log(|V|))]
+     *
+     * @param src The code of the source node.
+     * @param dest The code of the destination node.
+     * @param f The filter to use in the creation of the path.
+     */
+    void dijkstraTrans(const int src, const int dest);
+
     std::list<Node> maximizeJointAny(const int src, const int dest);
+
+    void minimizeJointTrans(const int src, const int dest, std::list<Node> &path1, std::list<Node> &path2);
 };
 
 #endif
