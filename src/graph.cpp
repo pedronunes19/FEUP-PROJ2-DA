@@ -13,7 +13,7 @@ void Graph::addEdge(Node &src, Node &dest, const double &capacity,
 }
 
 // Add edge from source to destination with a certain weight
-void Graph::addEdge(const double &src, const double &dest,
+void Graph::addEdge(const int &src, const int &dest,
                     const double &capacity, const double &distance) {
     addEdge(nodes[std::to_string(src)], nodes[std::to_string(dest)], capacity, distance);
 }
@@ -41,12 +41,12 @@ void Graph::populate(std::string dataset) {
         if (line == "") break;
 
         parsedLine = utils::file::split(line, ' ');
-        addEdge(std::stoul(parsedLine.at(0)), std::stoul(parsedLine.at(1)), std::stoul(parsedLine.at(2)), std::stoul(parsedLine.at(1)));
+        addEdge(std::stoi(parsedLine.at(0)), std::stoi(parsedLine.at(1)), std::stoul(parsedLine.at(2)), std::stoul(parsedLine.at(3)));
     }
 }
 
 void Graph::addNodes(unsigned long num_nodes) {
-    for (double i{1}; i <= num_nodes; i++) {
+    for (int i{1}; i <= num_nodes; i++) {
         Node node;
         node.id = i;
         nodes.insert(std::pair<std::string, Node>(std::to_string(i), node));
@@ -135,20 +135,20 @@ NOTE: EXTREMELY DANGEROUS CODE ACTUALLY CHANGE THIS IF YOU INTEND TO EVER RUN IT
 THIS SHOULDN'T KILL YOUR PC NOW (I THINK)      
 */
 void Graph::dijkstra(const int src, const int dest) {
-    MinHeap<std::string, double> q(nodes.size(), "");
+    MaxHeap<std::string, double> q(nodes.size(), "");
 
     for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i) {
-        i->second.dist = INF; // change this to -1
+        i->second.dist = -1; // change this to -1
         q.insert(i->first, -1);
         i->second.visited = false;
     }
 
-    nodes[std::to_string(src)].dist = 0; // change this to INF
-    q.decreaseKey(std::to_string(src), 0);
+    nodes[std::to_string(src)].dist = INF; // change this to INF
+    q.increaseKey(std::to_string(src), INF);
     nodes[std::to_string(src)].pred = std::to_string(src);
 
     while (q.getSize() > 0) {
-        std::string uc = q.removeMin();
+        std::string uc = q.removeMax();
         Node &u = getNode(uc);
         u.visited = true;
 
@@ -161,7 +161,8 @@ void Graph::dijkstra(const int src, const int dest) {
 
             if (!v.visited && std::min(u.dist, e.capacity) > v.dist) {
                 v.dist = std::min(u.dist, e.capacity);
-                q.decreaseKey(vc, v.dist);
+                v.pred = std::to_string(u.id);
+                q.increaseKey(vc, v.dist);
             }
         }
     }
@@ -176,7 +177,11 @@ std::list<Node> Graph::maximizeJointAny(const int src, const int dest) {
 
     path.push_back(getNode(std::to_string(dest)));
     std::string v = std::to_string(dest);
-    while (v != std::to_string(src)) {
+    std::cout << "hey ignore this\n";
+    for (auto uh: nodes){
+        std::cout << "string: " << uh.first << " node id: " << uh.second.id << "\n";
+    }
+    while (v != std::to_string(src) && !v.empty()) {
         v = nodes[v].pred;
         path.push_front(getNode(v));
     }

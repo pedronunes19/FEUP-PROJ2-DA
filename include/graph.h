@@ -5,7 +5,7 @@ class Graph;
 struct Edge;
 struct Node;
 
-#include "minHeap.h"
+#include "maxHeap.h"
 
 #include <deque>
 #include <iostream>
@@ -24,7 +24,7 @@ struct Edge {
     /**
      * @brief The destination node.
      */
-    double dest;
+    int dest;
     /**
      * @brief The distance between the two nodes.
      */
@@ -52,7 +52,7 @@ struct Node {
     /**
      * @brief The identifier of the node.
      */
-    double id;
+    int id;
     /**
      * @brief The distance between this node and its predecessor.
      *
@@ -96,7 +96,7 @@ public:
      * @param capacity The capacity between the two nodes.
      * @param distance The distance between the nodes.
      */
-    void addEdge(const double &src, const double &dest,
+    void addEdge(const int &src, const int &dest,
                  const double &capacity, const double &distance = 1.0);
     /**
      * @brief Adds a new edge between two nodes with the specified distance and
