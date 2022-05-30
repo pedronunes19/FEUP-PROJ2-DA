@@ -178,9 +178,11 @@ public:
      */
     void dijkstraTrans(const int src, const int dest);
 
-    std::list<Node> maximizeJointAny(const int src, const int dest);
+    std::list<Node> maximizeJointAny(const int src, const int dest, int &cap);
 
-    void minimizeJointTrans(const int src, const int dest, std::list<Node> &path1, std::list<Node> &path2);
+    void minimizeJointTrans(const int src, const int dest, std::list<Node> &path1, std::list<Node> &path2, int &cap);
+
+    bool bfs(const int src, const int dest);
 };
 
 #endif

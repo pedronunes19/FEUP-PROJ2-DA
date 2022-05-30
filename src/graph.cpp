@@ -133,7 +133,9 @@ NOTE: EXTREMELY DANGEROUS CODE ACTUALLY CHANGE THIS IF YOU INTEND TO EVER RUN IT
       good luck trying to fix this.
 
 
-THIS SHOULDN'T KILL YOUR PC NOW (I THINK)      
+    THIS SHOULDN'T KILL YOUR PC NOW (I THINK)
+    
+    THIS IS WORKING :D, leaving this for posteriority's sake
 */
 void Graph::dijkstra(const int src, const int dest) {
     MaxHeap<std::string, double> q(nodes.size(), "");
@@ -169,7 +171,35 @@ void Graph::dijkstra(const int src, const int dest) {
     }
 }
 
-std::list<Node> Graph::maximizeJointAny(const int src, const int dest) {
+bool Graph::bfs(const int src, const int dest) {
+    for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i)
+        i->second.visited = false;
+
+    std::queue<std::string> q; // queue of unvisited nodes
+    q.push(std::to_string(src));
+    nodes[std::to_string(src)].visited = true;
+    while (!q.empty()) { // while there are still unvisited nodes
+        std::string u = q.front();
+        q.pop();
+
+        if (u == std::to_string(dest))
+            return true;
+
+        for (auto e : nodes[u].adj) {
+            std::string w = std::to_string(e.dest);
+
+            if (!nodes[w].visited) {
+                q.push(w);
+                nodes[w].visited = true;
+                nodes[w].pred = u;
+            }
+        }
+    }
+
+    return false;
+}
+
+std::list<Node> Graph::maximizeJointAny(const int src, const int dest, int &cap) {
     dijkstra(src, dest);
 
     std::list<Node> path{};
@@ -178,6 +208,7 @@ std::list<Node> Graph::maximizeJointAny(const int src, const int dest) {
 
     path.push_back(getNode(std::to_string(dest)));
     std::string v = std::to_string(dest);
+    cap = nodes[v].cappd;
     while (v != std::to_string(src)) {
         v = nodes[v].pred;
         path.push_front(getNode(v));
@@ -186,59 +217,25 @@ std::list<Node> Graph::maximizeJointAny(const int src, const int dest) {
     return path;
 }
 
-void Graph::minimizeJointTrans(const int src, const int dest, std::list<Node> &path1, std::list<Node> &path2) {
+void Graph::minimizeJointTrans(const int src, const int dest, std::list<Node> &path1, std::list<Node> &path2, int &cap) {
     dijkstra(src, dest);
 
     if (nodes[std::to_string(dest)].cappd != 0) {
         path1.push_back(getNode(std::to_string(dest)));
         std::string v = std::to_string(dest);
+        cap = nodes[v].cappd;
         while (v != std::to_string(src)) {
             v = nodes[v].pred;
             path1.push_front(getNode(v));
         }
     }
 
-    dijkstraTrans(src, dest);
-
-    if (nodes[std::to_string(dest)].dur != 0) {
+    if (bfs(src, dest)) {
         path2.push_back(getNode(std::to_string(dest)));
         std::string v = std::to_string(dest);
         while (v != std::to_string(src)) {
             v = nodes[v].pred;
             path2.push_front(getNode(v));
-        }
-    }
-}
-void Graph::dijkstraTrans(const int src, const int dest){
-    MinHeap<std::string, double> q(nodes.size(), "");
-
-    for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i) {
-        i->second.dur = INF;
-        q.insert(i->first, INF);
-        i->second.visited = false;
-    }
-
-    nodes[std::to_string(src)].dur = 0;
-    q.decreaseKey(std::to_string(src), 0);
-    nodes[std::to_string(src)].pred = src;
-
-    while (q.getSize() > 0) {
-        std::string uc = q.removeMin();
-        Node &u = getNode(uc);
-        u.visited = true;
-
-        for (auto e : u.adj) {
-
-            std::string vc = std::to_string(e.dest);
-            Node &v = getNode(vc);
-
-            double w = u.dur + e.duration + (v.id != u.id) * 1000;
-
-            if (!v.visited && w < v.dur) {
-                v.dur = w;
-                q.decreaseKey(vc, v.dur);
-                v.pred = uc;
-            }
         }
     }
 }

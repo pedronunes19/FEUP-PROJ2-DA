@@ -15,8 +15,8 @@ public:
     void changeDataset(std::string dataset);
     double graphFord(int s, int t, std::vector<int> &path);
     int getDatasetMax();
-    std::list<Node> maximizeJointAny(int s, int t);
-    void minimizeJointTrans(int s, int t, std::list<Node> &path1, std::list<Node> &path2);
+    std::list<Node> maximizeJointAny(int s, int t, int &cap);
+    void minimizeJointTrans(int s, int t, std::list<Node> &path1, std::list<Node> &path2, int &cap);
     std::unordered_map<std::string, Node> getGraph();
 };
 

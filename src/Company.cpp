@@ -16,8 +16,8 @@ double Company::graphFord(int s, int t, std::vector<int> &path) {
     return 0;
 }
 
-std::list<Node> Company::maximizeJointAny(int s, int t) {
-    return graph.maximizeJointAny(s, t);
+std::list<Node> Company::maximizeJointAny(int s, int t, int &cap) {
+    return graph.maximizeJointAny(s, t, cap);
 }
 
 int Company::getDatasetMax() {
@@ -28,6 +28,6 @@ std::unordered_map<std::string, Node> Company::getGraph() {
     return graph.getNodes();
 }
 
-void Company::minimizeJointTrans(int s, int t, std::list<Node> &path1, std::list<Node> &path2) {
-    graph.minimizeJointTrans(s, t, path1, path2);
+void Company::minimizeJointTrans(int s, int t, std::list<Node> &path1, std::list<Node> &path2, int &cap) {
+    graph.minimizeJointTrans(s, t, path1, path2, cap);
 }

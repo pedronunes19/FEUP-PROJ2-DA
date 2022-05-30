@@ -62,7 +62,7 @@ void Menu::showMainMenu() {
 
 void Menu::showJointPlanMenu() {
     unsigned long start, end;
-    double max_flow;
+    int cap;
     std::list<Node> path, path2;
 
     std::string prompt = "[1] Maximize group\n"
@@ -75,7 +75,7 @@ void Menu::showJointPlanMenu() {
         case 1:
             start = getUnsignedInput("Start:", 0, company.getDatasetMax());
             end = getUnsignedInput("End:", 0, company.getDatasetMax());
-            path = company.maximizeJointAny(start, end);
+            path = company.maximizeJointAny(start, end, cap);
             if (!path.size()) {
                 std::cout << "No path found!" << std::endl;
                 utils::file::waitForEnter();
@@ -83,6 +83,7 @@ void Menu::showJointPlanMenu() {
                 break;
             }
 
+            std::cout << "Maximizing group dimensions (max: "<< cap << "):" << std::endl;
             for (auto const& i : path) {
                 std::cout << i.id << "\n";
             }
@@ -94,12 +95,12 @@ void Menu::showJointPlanMenu() {
         case 2:
             start = getUnsignedInput("Start:", 1, company.getDatasetMax());
             end = getUnsignedInput("End:", 1, company.getDatasetMax());
-            company.minimizeJointTrans(start, end, path, path2);
+            company.minimizeJointTrans(start, end, path, path2, cap);
 
             if (!path.size()) {
                 std::cout << "No path found when maximizing group dimension!" << std::endl;
             } else {
-                std::cout << "Maximizing group dimensions:" << std::endl;
+                std::cout << "Maximizing group dimensions (max: "<< cap << "):" << std::endl;
                 for (auto const& i : path) {
                     std::cout << i.id << "\n";
                 }
