@@ -17,6 +17,7 @@ public:
     int getDatasetMax();
     std::list<Node> maximizeJointAny(int s, int t, int &cap);
     void minimizeJointTrans(int s, int t, std::list<Node> &path1, std::list<Node> &path2, int &cap);
+    void ek(int s, int t);
     std::unordered_map<std::string, Node> getGraph();
 };
 

@@ -129,6 +129,41 @@ void Menu::showJointPlanMenu() {
     }
 }
 
+void Menu::showSeparatePlanMenu() {
+    unsigned long start, end;
+    int cap;
+    std::list<Node> path, path2;
+
+    std::string prompt = "[1] Find path by group size\n"
+                         "[2] Find path by group size (incrementing)\n"
+                         "[3] Find path for max group size\n"
+                         "[4] Find minimum path for group to be reunited\n"
+                         "[5] Find wait time\n"
+                         "[0] Exit\n"
+                         ">";
+    unsigned long option = getUnsignedInput(prompt, 0, 5);
+
+    switch(option) {
+        case 1:
+            break;
+        case 2:
+            break;
+        case 3:
+            start = getUnsignedInput("Start:", 0, company.getDatasetMax());
+            end = getUnsignedInput("End:", 0, company.getDatasetMax());
+            company.ek(start, end);
+            MOpt = MAIN_MENU;
+            break;
+        case 4:
+            break;
+        case 5:
+            break;
+        case 0:
+            MOpt = MAIN_MENU;
+            break;
+    }
+}
+
 void Menu::show() {
     switch (MOpt) {
         case MAIN_MENU:
@@ -138,7 +173,7 @@ void Menu::show() {
             showJointPlanMenu();
             break;
         case SEPARATE_PLAN:
-            // separatePlan();
+            showSeparatePlanMenu();
             break;
         case EXIT:
             throw Exit();

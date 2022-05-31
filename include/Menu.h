@@ -78,6 +78,8 @@ public:
 
     void showJointPlanMenu();
 
+    void showSeparatePlanMenu();
+
     void showExit();
 };
 

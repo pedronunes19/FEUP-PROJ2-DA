@@ -16,7 +16,7 @@ struct Node;
 #include <vector>
 #include <unordered_map>
 
-#define INF (std::numeric_limits<double>::max() / 2)
+#define INF (std::numeric_limits<double>::max()/2)
 
 /**
  * @brief Represents an edge connecting two nodes.
@@ -34,6 +34,8 @@ struct Edge {
      * @brief The capacity between the two nodes.
      */
     double capacity;
+    bool residual;
+    int flow{};
 };
 
 /**
@@ -72,6 +74,8 @@ struct Node {
      * @note Set after running an algorithm.
      */
     double cappd{};
+    int flow{};
+
 };
 
 /**
@@ -156,9 +160,11 @@ public:
      * @param src The code of the source node.
      * @param dest The code of the destination node.
      */
-    bool bfsResidual(std::vector<Node> residual, const int &src, const int &dest, std::vector<int> &path);
+    int bfsEK(const int &src, const int &dest, const int &pflow);
 
     double fordFulk(int s, int t, std::vector<int> &path);
+
+    int edmondsKarp(int src, int dest);
 
     /**
      * @brief Applies the regular dijkstra algorithm. [O(|E| log(|V|))]

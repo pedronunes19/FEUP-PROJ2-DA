@@ -31,3 +31,7 @@ std::unordered_map<std::string, Node> Company::getGraph() {
 void Company::minimizeJointTrans(int s, int t, std::list<Node> &path1, std::list<Node> &path2, int &cap) {
     graph.minimizeJointTrans(s, t, path1, path2, cap);
 }
+
+void Company::ek(int s, int t) {
+    graph.edmondsKarp(s, t);
+}

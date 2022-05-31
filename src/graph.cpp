@@ -54,70 +54,57 @@ void Graph::addNodes(unsigned long num_nodes) {
     }
 }
 
-bool Graph::bfsResidual(std::vector<Node> residual, const int &src, const int &dest, std::vector<int> &path) {
-    for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i)
+int Graph::bfsEK(const int &src, const int &dest, const int &pflow) {
+    for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i){
         (*i).second.visited = false;
+        (*i).second.flow = INT32_MAX;
+        for (auto j{(*i).second.adj.begin()}, end{(*i).second.adj.end()}; j != end; j++) {
+            (*j).flow = (*j).capacity - pflow;
+            if ((*j).flow > 0) {
+                (*j).residual = true;
+            } else {
+                (*j).residual = false;
+            }
+            if ((*j).residual)
+                (*i).second.flow = std::min((*j).flow, (*i).second.flow);
+        }
+    }
+    int new_flow = 0;
     std::queue<int> q;
     q.push(src);
-    residual.at(src).visited = true;
+    nodes[std::to_string(src)].visited = true;
+    nodes[std::to_string(src)].flow = INT32_MAX;
     while (!q.empty()) {
         int u = q.front();
         q.pop();
 
-        for (auto e : residual.at(u).adj) {
-            int w = e.dest;
+        for (auto e : nodes[std::to_string(u)].adj) {
+            int w = e.dest; // destination node of e (edge)
 
-            if (!residual.at(w).visited && e.capacity > 0) {
-                path.push_back(w);
-
-                if (u == dest) {
-                    return true;
+            if (!nodes[std::to_string(w)].visited && e.residual) {
+                nodes[std::to_string(w)].pred = u;
+                int new_flow = std::min(nodes[std::to_string(u)].flow, nodes[std::to_string(w)].flow);
+                if (w == dest) {
+                    std::cout << u << std::endl;
+                    return new_flow;
                 }
-
+                nodes[std::to_string(w)].flow = new_flow;
                 q.push(w);
-                residual.at(w).visited = true;
             }
         }
     }
 
-    std::cout << "hi" << std::endl;
-    return false;
+    return 0;
 }
 
-double Graph::fordFulk(int s, int t, std::vector<int> &path) {
+int Graph::edmondsKarp(int src, int dest) {
+    int flow = 0;
+    int new_flow;
 
-    std::vector<Node> residual;
-    for (auto n: nodes){
-        residual.push_back(n.second);
+    while (new_flow = bfsEK(src, dest, flow)) {
+        flow += new_flow;
     }
-
-    double mflow = 0;
-
-    while (bfsResidual(residual, s, t, path)) {
-        double pflow = INT_MAX;
-
-        // Checking minimum flow
-        for (int i = t; t != s; i = path.at(i)) {
-            int j = path[i];
-            for (auto e : residual.at(j).adj) {
-                if (e.dest == i) {
-                    pflow = std::min(pflow, e.capacity);
-                }
-            }
-        }
-
-        // Updating capacities
-        for (int i = t; t != s; i = path.at(i)) {
-            int j = path[i];
-            for (auto e : residual.at(j).adj) {
-                e.capacity -= pflow;
-            }
-        }
-
-        mflow += pflow;
-    }
-
-    return mflow;
+    return flow;
 }
 
 int Graph::getDatasetMax() {
