@@ -10,7 +10,7 @@
 // Add edge from source to destination with a certain weight
 void Graph::addEdge(Node &src, Node &dest, const double &capacity,
                     const double &duration) {
-    src.adj.push_back({dest.id, duration, capacity});
+    src.adj.push_back({dest.id, duration, capacity, false, 0});
 }
 
 // Add edge from source to destination with a certain weight
@@ -54,22 +54,10 @@ void Graph::addNodes(unsigned long num_nodes) {
     }
 }
 
-int Graph::bfsEK(const int &src, const int &dest, const int &pflow) {
+int Graph::bfsEK(const int &src, const int &dest) {
     for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i){
         (*i).second.visited = false;
-        (*i).second.flow = INT32_MAX;
-        for (auto j{(*i).second.adj.begin()}, end{(*i).second.adj.end()}; j != end; j++) {
-            (*j).flow = (*j).capacity - pflow;
-            if ((*j).flow > 0) {
-                (*j).residual = true;
-            } else {
-                (*j).residual = false;
-            }
-            if ((*j).residual)
-                (*i).second.flow = std::min((*j).flow, (*i).second.flow);
-        }
     }
-    int new_flow = 0;
     std::queue<int> q;
     q.push(src);
     nodes[std::to_string(src)].visited = true;
@@ -77,18 +65,19 @@ int Graph::bfsEK(const int &src, const int &dest, const int &pflow) {
     while (!q.empty()) {
         int u = q.front();
         q.pop();
-
-        for (auto e : nodes[std::to_string(u)].adj) {
+        nodes[std::to_string(u)].visited = true;
+        for (auto &e : nodes[std::to_string(u)].adj) {
             int w = e.dest; // destination node of e (edge)
 
-            if (!nodes[std::to_string(w)].visited && e.residual) {
-                nodes[std::to_string(w)].pred = u;
-                int new_flow = std::min(nodes[std::to_string(u)].flow, nodes[std::to_string(w)].flow);
+            if (!nodes[std::to_string(w)].visited && e.flow>0 && !e.residual) {
+                nodes[std::to_string(w)].pred = std::to_string(u);
+                nodes[std::to_string(w)].visited = true;
+                int new_flow = std::min(nodes[std::to_string(u)].flow, e.flow);
                 if (w == dest) {
-                    std::cout << u << std::endl;
                     return new_flow;
                 }
                 nodes[std::to_string(w)].flow = new_flow;
+                e.flow = new_flow;
                 q.push(w);
             }
         }
@@ -101,9 +90,30 @@ int Graph::edmondsKarp(int src, int dest) {
     int flow = 0;
     int new_flow;
 
-    while (new_flow = bfsEK(src, dest, flow)) {
-        flow += new_flow;
+    for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i){
+        auto &adj = (*i).second.adj;
+        for (auto j{adj.begin()}, end1{adj.end()}; j != end1; ++j){
+            (*j).flow = (*j).capacity;
+
+        }
     }
+
+    while (new_flow = bfsEK(src, dest)) {
+        flow += new_flow;
+        int curr = dest;
+        while (curr != src){
+            int prev = stoi(nodes.at(std::to_string(curr)).pred);
+            auto it_prev_to_curr = std::find_if(nodes.at(std::to_string(prev)).adj.begin(), nodes.at(std::to_string(prev)).adj.end(), [curr](const Edge & e){return e.dest==curr;});
+            it_prev_to_curr->flow -= new_flow;
+            auto it_curr_to_prev = std::find_if(nodes.at(std::to_string(curr)).adj.begin(), nodes.at(std::to_string(curr)).adj.end(), [prev](const Edge & e){return e.dest==prev;});
+            if (it_curr_to_prev!=(nodes.at(std::to_string(prev)).adj.end())){
+                nodes.at(std::to_string(prev)).adj.emplace_back(Edge{prev, it_prev_to_curr->duration, it_prev_to_curr->capacity, true, (int)it_prev_to_curr->capacity - it_prev_to_curr->flow});
+            }
+            it_curr_to_prev->flow += new_flow;
+            curr = prev;
+        }
+    }
+    std::cout << flow << "\n";
     return flow;
 }
 

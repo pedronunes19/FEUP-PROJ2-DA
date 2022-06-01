@@ -15,6 +15,7 @@ struct Node;
 #include <queue>
 #include <vector>
 #include <unordered_map>
+#include <algorithm>
 
 #define INF (std::numeric_limits<double>::max()/2)
 
@@ -160,7 +161,7 @@ public:
      * @param src The code of the source node.
      * @param dest The code of the destination node.
      */
-    int bfsEK(const int &src, const int &dest, const int &pflow);
+    int bfsEK(const int &src, const int &dest);
 
     double fordFulk(int s, int t, std::vector<int> &path);
 
