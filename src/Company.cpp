@@ -35,3 +35,7 @@ void Company::minimizeJointTrans(std::string s, std::string t, std::list<Node> &
 void Company::ek(std::string s, std::string t) {
     graph.edmondsKarp(s, t);
 }
+
+void Company::ekLimit(std::string s, std::string t, int size) {
+    graph.edmondsKarpLimit(s, t, size);
+}

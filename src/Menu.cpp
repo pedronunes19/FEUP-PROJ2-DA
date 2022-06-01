@@ -134,8 +134,7 @@ void Menu::showJointPlanMenu() {
 void Menu::showSeparatePlanMenu() {
     utils::file::clearScreen();
 
-    unsigned long start, end;
-    int cap;
+    unsigned long start, end, cap;
     std::list<Node> path, path2;
 
     std::string prompt = "[1] Find path by group size\n"
@@ -149,6 +148,12 @@ void Menu::showSeparatePlanMenu() {
 
     switch(option) {
         case 1:
+            start = getUnsignedInput("Start:", 0, company.getDatasetMax());
+            end = getUnsignedInput("End:", 0, company.getDatasetMax());
+            cap = getUnsignedInput("Group Size:", 0, INT32_MAX);
+            company.ekLimit(std::to_string(start), std::to_string(end), cap);
+            utils::file::waitForEnter();
+            MOpt = MAIN_MENU;
             break;
         case 2:
             break;
