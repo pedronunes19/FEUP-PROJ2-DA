@@ -104,14 +104,15 @@ int Graph::edmondsKarp(const std::string src, const std::string dest) {
 
     while (new_flow = bfsEK(src, dest)) {
         flow += new_flow;
-        int curr = stoi(dest);
-        while (curr != stoi(src)){
-            int prev = stoi(nodes.at(std::to_string(curr)).pred);
-            auto it_prev_to_curr = std::find_if(nodes.at(std::to_string(prev)).adj.begin(), nodes.at(std::to_string(prev)).adj.end(), [curr](const Edge & e){return e.dest==curr;});
+        std::string curr = dest;
+        while (curr != src){
+            std::string prev = nodes.at(curr).pred;
+            auto it_prev_to_curr = std::find_if(nodes.at(prev).adj.begin(), nodes.at(prev).adj.end(), [curr](const Edge & e){return e.dest==stoi(curr);});
             it_prev_to_curr->flow -= new_flow;
-            auto it_curr_to_prev = std::find_if(nodes.at(std::to_string(curr)).adj.begin(), nodes.at(std::to_string(curr)).adj.end(), [prev](const Edge & e){return e.dest==prev;});
-            if (it_curr_to_prev!=(nodes.at(std::to_string(prev)).adj.end())){
-                nodes.at(std::to_string(prev)).adj.emplace_back(Edge{prev, it_prev_to_curr->duration, it_prev_to_curr->capacity, true, (int)it_prev_to_curr->capacity - it_prev_to_curr->flow});
+            auto it_curr_to_prev = std::find_if(nodes.at(curr).adj.begin(), nodes.at(curr).adj.end(), [prev](const Edge & e){return e.dest==stoi(prev);});
+            if (it_curr_to_prev==(nodes.at(prev).adj.end())){
+                nodes.at(prev).adj.emplace_back(Edge{stoi(prev), it_prev_to_curr->duration, it_prev_to_curr->capacity, true, (int)it_prev_to_curr->capacity - it_prev_to_curr->flow});
+                it_curr_to_prev = std::find_if(nodes.at(curr).adj.begin(), nodes.at(curr).adj.end(), [prev](const Edge & e){return e.dest==stoi(prev);});
             }
             it_curr_to_prev->flow += new_flow;
             curr = prev;
