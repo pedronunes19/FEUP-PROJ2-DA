@@ -7,16 +7,20 @@
 #include "../include/constants.h"
 #include "../include/graph.h"
 
+int Graph::getDatasetMax() {
+    return dataset_max;
+}
+
 // Add edge from source to destination with a certain weight
-void Graph::addEdge(Node &src, Node &dest, const double &capacity,
-                    const double &duration) {
+void Graph::addEdge(Node &src, Node &dest, const int &capacity,
+                    const int &duration) {
     src.adj.push_back({dest.id, duration, capacity, false, 0});
 }
 
 // Add edge from source to destination with a certain weight
-void Graph::addEdge(const int &src, const int &dest,
-                    const double &capacity, const double &duration) {
-    addEdge(nodes[std::to_string(src)], nodes[std::to_string(dest)], capacity, duration);
+void Graph::addEdge(const std::string &src, const std::string &dest,
+                    const int &capacity, const int &duration) {
+    addEdge(nodes[src], nodes[dest], capacity, duration);
 }
 
 void Graph::populate(std::string dataset) {
@@ -32,7 +36,7 @@ void Graph::populate(std::string dataset) {
     std::vector<std::string> parsedLine;
     getline(f, line);
     parsedLine = utils::file::split(line, ' ');
-    nodes_num = std::stoul(parsedLine.at(0));
+    nodes_num = std::stoi(parsedLine.at(0));
     dataset_max = nodes_num;
     addNodes(nodes_num);
 
@@ -42,11 +46,11 @@ void Graph::populate(std::string dataset) {
         if (line == "") break;
 
         parsedLine = utils::file::split(line, ' ');
-        addEdge(std::stoi(parsedLine.at(0)), std::stoi(parsedLine.at(1)), std::stoul(parsedLine.at(2)), std::stoul(parsedLine.at(3)));
+        addEdge(parsedLine.at(0), parsedLine.at(1), std::stoi(parsedLine.at(2)), std::stoi(parsedLine.at(3)));
     }
 }
 
-void Graph::addNodes(unsigned long num_nodes) {
+void Graph::addNodes(const int num_nodes) {
     for (int i{1}; i <= num_nodes; i++) {
         Node node;
         node.id = i;
@@ -54,29 +58,30 @@ void Graph::addNodes(unsigned long num_nodes) {
     }
 }
 
-int Graph::bfsEK(const int &src, const int &dest) {
+int Graph::bfsEK(const std::string &src, const std::string &dest) {
     for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i){
         (*i).second.visited = false;
     }
-    std::queue<int> q;
-    q.push(src);
-    nodes[std::to_string(src)].visited = true;
-    nodes[std::to_string(src)].flow = INT32_MAX;
-    while (!q.empty()) {
-        int u = q.front();
-        q.pop();
-        nodes[std::to_string(u)].visited = true;
-        for (auto &e : nodes[std::to_string(u)].adj) {
-            int w = e.dest; // destination node of e (edge)
 
-            if (!nodes[std::to_string(w)].visited && e.flow>0 && !e.residual) {
-                nodes[std::to_string(w)].pred = std::to_string(u);
-                nodes[std::to_string(w)].visited = true;
-                int new_flow = std::min(nodes[std::to_string(u)].flow, e.flow);
+    std::queue<std::string> q;
+    q.push(src);
+    nodes[src].visited = true;
+    nodes[src].flow = INT32_MAX;
+    while (!q.empty()) {
+        std::string u = q.front();
+        q.pop();
+        nodes[u].visited = true;
+        for (auto &e : nodes[u].adj) {
+            std::string w = std::to_string(e.dest); // destination node of e (edge)
+
+            if (!nodes[w].visited && e.flow>0 && !e.residual) {
+                nodes[w].pred = u;
+                nodes[w].visited = true;
+                int new_flow = std::min(nodes[u].flow, e.flow);
                 if (w == dest) {
                     return new_flow;
                 }
-                nodes[std::to_string(w)].flow = new_flow;
+                nodes[w].flow = new_flow;
                 e.flow = new_flow;
                 q.push(w);
             }
@@ -86,7 +91,7 @@ int Graph::bfsEK(const int &src, const int &dest) {
     return 0;
 }
 
-int Graph::edmondsKarp(int src, int dest) {
+int Graph::edmondsKarp(const std::string src, const std::string dest) {
     int flow = 0;
     int new_flow;
 
@@ -94,14 +99,13 @@ int Graph::edmondsKarp(int src, int dest) {
         auto &adj = (*i).second.adj;
         for (auto j{adj.begin()}, end1{adj.end()}; j != end1; ++j){
             (*j).flow = (*j).capacity;
-
         }
     }
 
     while (new_flow = bfsEK(src, dest)) {
         flow += new_flow;
-        int curr = dest;
-        while (curr != src){
+        int curr = stoi(dest);
+        while (curr != stoi(src)){
             int prev = stoi(nodes.at(std::to_string(curr)).pred);
             auto it_prev_to_curr = std::find_if(nodes.at(std::to_string(prev)).adj.begin(), nodes.at(std::to_string(prev)).adj.end(), [curr](const Edge & e){return e.dest==curr;});
             it_prev_to_curr->flow -= new_flow;
@@ -117,11 +121,6 @@ int Graph::edmondsKarp(int src, int dest) {
     return flow;
 }
 
-int Graph::getDatasetMax() {
-    return dataset_max;
-}
- 
-
 /*
 NOTE: EXTREMELY DANGEROUS CODE ACTUALLY CHANGE THIS IF YOU INTEND TO EVER RUN IT
       THIS IS NOT A JOKE
@@ -134,7 +133,7 @@ NOTE: EXTREMELY DANGEROUS CODE ACTUALLY CHANGE THIS IF YOU INTEND TO EVER RUN IT
     
     THIS IS WORKING :D, leaving this for posteriority's sake
 */
-void Graph::dijkstra(const int src, const int dest) {
+void Graph::dijkstra(const std::string src, const std::string dest) {
     MaxHeap<std::string, double> q(nodes.size(), "");
 
     for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i) {
@@ -143,16 +142,16 @@ void Graph::dijkstra(const int src, const int dest) {
         i->second.visited = false;
     }
 
-    nodes[std::to_string(src)].cappd = INF;
-    q.increaseKey(std::to_string(src), INF);
-    nodes[std::to_string(src)].pred = std::to_string(src);
+    nodes[src].cappd = INF;
+    q.increaseKey(src, INF);
+    nodes[src].pred = src;
 
     while (q.getSize() > 0) {
         std::string uc = q.removeMax();
         Node &u = getNode(uc);
         u.visited = true;
 
-        if (uc == std::to_string(dest))
+        if (uc == dest)
             return;
 
         for (auto e : u.adj) {
@@ -168,18 +167,18 @@ void Graph::dijkstra(const int src, const int dest) {
     }
 }
 
-bool Graph::bfs(const int src, const int dest) {
+bool Graph::bfs(const std::string src, const std::string dest) {
     for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i)
         i->second.visited = false;
 
     std::queue<std::string> q; // queue of unvisited nodes
-    q.push(std::to_string(src));
-    nodes[std::to_string(src)].visited = true;
+    q.push(src);
+    nodes[src].visited = true;
     while (!q.empty()) { // while there are still unvisited nodes
         std::string u = q.front();
         q.pop();
 
-        if (u == std::to_string(dest))
+        if (u == dest)
             return true;
 
         for (auto e : nodes[u].adj) {
@@ -196,17 +195,17 @@ bool Graph::bfs(const int src, const int dest) {
     return false;
 }
 
-std::list<Node> Graph::maximizeJointAny(const int src, const int dest, int &cap) {
+std::list<Node> Graph::maximizeJointAny(const std::string src, const std::string dest, int &cap) {
     dijkstra(src, dest);
 
     std::list<Node> path{};
-    if (nodes[std::to_string(dest)].cappd == 0)
+    if (nodes[dest].cappd == 0)
         return path;
 
-    path.push_back(getNode(std::to_string(dest)));
-    std::string v = std::to_string(dest);
+    path.push_back(getNode(dest));
+    std::string v = dest;
     cap = nodes[v].cappd;
-    while (v != std::to_string(src)) {
+    while (v != src) {
         v = nodes[v].pred;
         path.push_front(getNode(v));
     }
@@ -214,23 +213,23 @@ std::list<Node> Graph::maximizeJointAny(const int src, const int dest, int &cap)
     return path;
 }
 
-void Graph::minimizeJointTrans(const int src, const int dest, std::list<Node> &path1, std::list<Node> &path2, int &cap) {
+void Graph::minimizeJointTrans(const std::string src, const std::string dest, std::list<Node> &path1, std::list<Node> &path2, int &cap) {
     dijkstra(src, dest);
 
-    if (nodes[std::to_string(dest)].cappd != 0) {
-        path1.push_back(getNode(std::to_string(dest)));
-        std::string v = std::to_string(dest);
+    if (nodes[dest].cappd != 0) {
+        path1.push_back(getNode(dest));
+        std::string v = dest;
         cap = nodes[v].cappd;
-        while (v != std::to_string(src)) {
+        while (v != src) {
             v = nodes[v].pred;
             path1.push_front(getNode(v));
         }
     }
 
     if (bfs(src, dest)) {
-        path2.push_back(getNode(std::to_string(dest)));
-        std::string v = std::to_string(dest);
-        while (v != std::to_string(src)) {
+        path2.push_back(getNode(dest));
+        std::string v = dest;
+        while (v != src) {
             v = nodes[v].pred;
             path2.push_front(getNode(v));
         }

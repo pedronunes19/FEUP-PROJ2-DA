@@ -38,6 +38,7 @@ bool Menu::inRange(unsigned long n, unsigned long min,
 }
 
 void Menu::showMainMenu() {
+    utils::file::clearScreen();
 
     std::string prompt = "Generic Company that does company stuff\n\n"
                          "[1] Joint Planning\n"
@@ -61,13 +62,14 @@ void Menu::showMainMenu() {
 }
 
 void Menu::showJointPlanMenu() {
+    utils::file::clearScreen();
     unsigned long start, end;
     int cap;
     std::list<Node> path, path2;
 
     std::string prompt = "[1] Maximize group\n"
                          "[2] Minimize transport switches\n"
-                         "[0] Exit\n"
+                         "[0] Back\n"
                          ">";
     unsigned long option = getUnsignedInput(prompt, 0, 2);
 
@@ -75,7 +77,7 @@ void Menu::showJointPlanMenu() {
         case 1:
             start = getUnsignedInput("Start:", 0, company.getDatasetMax());
             end = getUnsignedInput("End:", 0, company.getDatasetMax());
-            path = company.maximizeJointAny(start, end, cap);
+            path = company.maximizeJointAny(std::to_string(start), std::to_string(end), cap);
             if (!path.size()) {
                 std::cout << "No path found!" << std::endl;
                 utils::file::waitForEnter();
@@ -95,7 +97,7 @@ void Menu::showJointPlanMenu() {
         case 2:
             start = getUnsignedInput("Start:", 1, company.getDatasetMax());
             end = getUnsignedInput("End:", 1, company.getDatasetMax());
-            company.minimizeJointTrans(start, end, path, path2, cap);
+            company.minimizeJointTrans(std::to_string(start), std::to_string(end), path, path2, cap);
 
             if (!path.size()) {
                 std::cout << "No path found when maximizing group dimension!" << std::endl;
@@ -130,6 +132,8 @@ void Menu::showJointPlanMenu() {
 }
 
 void Menu::showSeparatePlanMenu() {
+    utils::file::clearScreen();
+
     unsigned long start, end;
     int cap;
     std::list<Node> path, path2;
@@ -139,7 +143,7 @@ void Menu::showSeparatePlanMenu() {
                          "[3] Find path for max group size\n"
                          "[4] Find minimum path for group to be reunited\n"
                          "[5] Find wait time\n"
-                         "[0] Exit\n"
+                         "[0] Back\n"
                          ">";
     unsigned long option = getUnsignedInput(prompt, 0, 5);
 
@@ -151,7 +155,8 @@ void Menu::showSeparatePlanMenu() {
         case 3:
             start = getUnsignedInput("Start:", 0, company.getDatasetMax());
             end = getUnsignedInput("End:", 0, company.getDatasetMax());
-            company.ek(start, end);
+            company.ek(std::to_string(start), std::to_string(end));
+            utils::file::waitForEnter();
             MOpt = MAIN_MENU;
             break;
         case 4:

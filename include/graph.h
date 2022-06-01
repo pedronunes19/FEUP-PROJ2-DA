@@ -17,7 +17,7 @@ struct Node;
 #include <unordered_map>
 #include <algorithm>
 
-#define INF (std::numeric_limits<double>::max()/2)
+#define INF (std::numeric_limits<int>::max()/2)
 
 /**
  * @brief Represents an edge connecting two nodes.
@@ -30,12 +30,18 @@ struct Edge {
     /**
      * @brief The distance between the two nodes.
      */
-    double duration;
+    int duration;
     /**
      * @brief The capacity between the two nodes.
      */
-    double capacity;
+    int capacity;
+    /**
+     * @brief The capacity between the two nodes.
+     */
     bool residual;
+    /**
+     * @brief The capacity between the two nodes.
+     */
     int flow{};
 };
 
@@ -62,7 +68,7 @@ struct Node {
      *
      * @note Set after running an algorithm.
      */
-    double dur{};
+    int dur{};
     /**
      * @brief This node's predecessor.
      *
@@ -74,7 +80,12 @@ struct Node {
      *
      * @note Set after running an algorithm.
      */
-    double cappd{};
+    int cappd{};
+        /**
+     * @brief The distance between this node and its predecessor.
+     *
+     * @note Set after running an algorithm.
+     */
     int flow{};
 
 };
@@ -108,8 +119,8 @@ public:
      * @param capacity The capacity between the two nodes.
      * @param distance The distance between the nodes.
      */
-    void addEdge(const int &src, const int &dest,
-                 const double &capacity, const double &distance = 1.0);
+    void addEdge(const std::string &src, const std::string &dest,
+                 const int &capacity, const int &distance = 1.0);
     /**
      * @brief Adds a new edge between two nodes with the specified distance and
      *        code.
@@ -119,8 +130,8 @@ public:
      * @param capacity The capacity between the two nodes.
      * @param distance The distance between the nodes.
      */
-    void addEdge(Node &src, Node &dest, const double &capacity,
-                 const double &distance = 1.0);
+    void addEdge(Node &src, Node &dest, const int &capacity,
+                 const int &distance = 1.0);
 
     /**
      * @return This graph's nodes.
@@ -137,7 +148,6 @@ public:
 
     int getDatasetMax();
 
-
     /**
      * @brief Populates this graph with info from files and by foot edges.
      *
@@ -145,7 +155,7 @@ public:
      */
     void populate(std::string dataset = NORMAL_DATASET_1);
 
-    void addNodes(unsigned long nodes);
+    void addNodes(const int num_nodes);
 
     /**
      * @brief Applies the bfs (breadth-first search) algorithm. [O(|V| + |E|)]
@@ -153,7 +163,7 @@ public:
      * @param src The code of the source node.
      * @param dest The code of the destination node.
      */
-    void bfs(const int &src, const int &dest, std::vector<int> &path);
+    void bfs(const std::string &src, const std::string &dest, std::vector<int> &path);
 
     /**
      * @brief Applies the bfs (breadth-first search) algorithm. [O(|V| + |E|)]
@@ -161,11 +171,12 @@ public:
      * @param src The code of the source node.
      * @param dest The code of the destination node.
      */
-    int bfsEK(const int &src, const int &dest);
+    int bfsEK(const std::string &src, const std::string &dest);
 
-    double fordFulk(int s, int t, std::vector<int> &path);
+    /* SHOULD PROBABLY REMOVE THIS */
+    // double fordFulk(int s, int t, std::vector<int> &path);
 
-    int edmondsKarp(int src, int dest);
+    int edmondsKarp(const std::string src, const std::string dest);
 
     /**
      * @brief Applies the regular dijkstra algorithm. [O(|E| log(|V|))]
@@ -174,7 +185,7 @@ public:
      * @param dest The code of the destination node.
      * @param f The filter to use in the creation of the path.
      */
-    void dijkstra(const int src, const int dest);
+    void dijkstra(const std::string src, const std::string dest);
 
     /**
      * @brief Applies the regular dijkstra algorithm. [O(|E| log(|V|))]
@@ -183,13 +194,13 @@ public:
      * @param dest The code of the destination node.
      * @param f The filter to use in the creation of the path.
      */
-    void dijkstraTrans(const int src, const int dest);
+    void dijkstraTrans(const std::string src, const std::string dest);
 
-    std::list<Node> maximizeJointAny(const int src, const int dest, int &cap);
+    std::list<Node> maximizeJointAny(const std::string src, const std::string dest, int &cap);
 
-    void minimizeJointTrans(const int src, const int dest, std::list<Node> &path1, std::list<Node> &path2, int &cap);
+    void minimizeJointTrans(const std::string src, const std::string dest, std::list<Node> &path1, std::list<Node> &path2, int &cap);
 
-    bool bfs(const int src, const int dest);
+    bool bfs(const std::string src, const std::string dest);
 };
 
 #endif

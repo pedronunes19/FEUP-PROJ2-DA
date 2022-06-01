@@ -13,11 +13,11 @@ class Company {
 public:
     Company();
     void changeDataset(std::string dataset);
-    double graphFord(int s, int t, std::vector<int> &path);
+    // double graphFord(int s, int t, std::vector<int> &path);
     int getDatasetMax();
-    std::list<Node> maximizeJointAny(int s, int t, int &cap);
-    void minimizeJointTrans(int s, int t, std::list<Node> &path1, std::list<Node> &path2, int &cap);
-    void ek(int s, int t);
+    std::list<Node> maximizeJointAny(std::string s, std::string t, int &cap);
+    void minimizeJointTrans(std::string s, std::string t, std::list<Node> &path1, std::list<Node> &path2, int &cap);
+    void ek(std::string s, std::string t);
     std::unordered_map<std::string, Node> getGraph();
 };
 
