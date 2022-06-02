@@ -36,6 +36,6 @@ void Company::ek(std::string s, std::string t) {
     graph.edmondsKarp(s, t);
 }
 
-void Company::ekLimit(std::string s, std::string t, int size) {
-    graph.edmondsKarpLimit(s, t, size);
+int Company::ekLimit(std::string s, std::string t, unsigned long size) {
+    return graph.edmondsKarpLimit(s, t, size);
 }

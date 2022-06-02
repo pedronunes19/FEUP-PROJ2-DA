@@ -134,7 +134,8 @@ void Menu::showJointPlanMenu() {
 void Menu::showSeparatePlanMenu() {
     utils::file::clearScreen();
 
-    unsigned long start, end, cap;
+    unsigned long start, end, cap, add_cap;
+    int init_flow, end_flow;
     std::list<Node> path, path2;
 
     std::string prompt = "[1] Find path by group size\n"
@@ -150,12 +151,33 @@ void Menu::showSeparatePlanMenu() {
         case 1:
             start = getUnsignedInput("Start:", 0, company.getDatasetMax());
             end = getUnsignedInput("End:", 0, company.getDatasetMax());
-            cap = getUnsignedInput("Group Size:", 0, INT32_MAX);
+            cap = getUnsignedInput("Group Size:", 1, INT32_MAX);
             company.ekLimit(std::to_string(start), std::to_string(end), cap);
             utils::file::waitForEnter();
             MOpt = MAIN_MENU;
             break;
         case 2:
+            start = getUnsignedInput("Start:", 0, company.getDatasetMax());
+            end = getUnsignedInput("End:", 0, company.getDatasetMax());
+            cap = getUnsignedInput("Group Size:", 1, INT32_MAX);
+            init_flow = company.ekLimit(std::to_string(start), std::to_string(end), cap);
+            if (!init_flow) {
+                utils::file::waitForEnter();
+                MOpt = MAIN_MENU;
+                break;
+            }
+            add_cap = getUnsignedInput("Try to increment group size by:", 1, INT32_MAX);
+            end_flow = company.ekLimit(std::to_string(start), std::to_string(end), cap + add_cap);
+
+            if (end_flow < cap + add_cap) {
+                std::cout << "Group increase failed (from " << cap << " to " << cap + add_cap << "). Maximum capacity is: " << end_flow << ".\n";
+            }
+
+            else {
+                std::cout << "Group increase successful (from " << cap << " to " << cap + add_cap << ")!\n";
+            }
+            utils::file::waitForEnter();
+            MOpt = MAIN_MENU;
             break;
         case 3:
             start = getUnsignedInput("Start:", 0, company.getDatasetMax());

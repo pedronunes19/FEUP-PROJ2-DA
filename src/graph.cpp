@@ -103,52 +103,7 @@ int Graph::edmondsKarp(const std::string src, const std::string dest) {
         }
     }
 
-    while (new_flow = bfsEK(src, dest)) {
-        flow += new_flow;
-        std::string curr = dest;
-        while (curr != src){
-            std::string prev = nodes.at(curr).pred;
-            auto it_prev_to_curr = std::find_if(nodes.at(prev).adj.begin(), nodes.at(prev).adj.end(), [curr](const Edge & e){return e.dest==stoi(curr);});
-            it_prev_to_curr->flow -= new_flow;
-            auto it_curr_to_prev = std::find_if(nodes.at(curr).adj.begin(), nodes.at(curr).adj.end(), [prev](const Edge & e){return e.dest==stoi(prev);});
-            if (it_curr_to_prev==(nodes.at(prev).adj.end())){
-                nodes.at(prev).adj.emplace_back(Edge{stoi(prev), it_prev_to_curr->duration, it_prev_to_curr->capacity, true, (int)it_prev_to_curr->capacity - it_prev_to_curr->flow});
-                it_curr_to_prev = std::find_if(nodes.at(curr).adj.begin(), nodes.at(curr).adj.end(), [prev](const Edge & e){return e.dest==stoi(prev);});
-            }
-            it_curr_to_prev->flow += new_flow;
-            curr = prev;
-        }
-        std::string v = dest;
-        std::list<Node> path{};
-        path.push_front(getNode(v));
-        while (v != src) {
-            v = nodes[v].pred;
-            path.push_front(getNode(v));
-        }
-        std::cout << "send " << new_flow << " people\n";
-        for (auto a: path){
-            std::cout << a.id << " -> ";
-        }
-        std::cout << "\n\n";
-    }
-    std::cout << flow << "\n";
-    return flow;
-}
-
-
-int Graph::edmondsKarpLimit(const std::string src, const std::string dest, const int size) {
-    int flow = 0;
-    int new_flow;
-
-    for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i){
-        auto &adj = (*i).second.adj;
-        for (auto j{adj.begin()}, end1{adj.end()}; j != end1; ++j){
-            if (!(*j).residual) (*j).flow = (*j).capacity;
-            else (*j).flow = 0;
-        }
-    }
-
-    new_flow = bfsEK(src, dest) && flow < size;
+    new_flow = bfsEK(src, dest);
     while (new_flow) {
         flow += new_flow;
         std::string curr = dest;
@@ -177,9 +132,64 @@ int Graph::edmondsKarpLimit(const std::string src, const std::string dest, const
             else std::cout << a.id << " -> ";
         }
         std::cout << "\n\n";
-        new_flow = bfsEK(src, dest) && flow < size;
+        new_flow = bfsEK(src, dest);
     }
-    std::cout << flow << "\n";
+    if (!flow) std::cout << "Flow: " << flow << " - No path was found between the source and destination.\n";
+    else std::cout << "Flow: " << flow << "\n";
+    return flow;
+}
+
+
+int Graph::edmondsKarpLimit(const std::string src, const std::string dest, const unsigned long size) {
+    int flow = 0;
+    int new_flow, old_flow;
+
+    for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i){
+        auto &adj = (*i).second.adj;
+        for (auto j{adj.begin()}, end1{adj.end()}; j != end1; ++j){
+            if (!(*j).residual) (*j).flow = (*j).capacity;
+            else (*j).flow = 0;
+        }
+    }
+
+    new_flow = bfsEK(src, dest);
+    while (new_flow) {
+        if (flow == size) break;
+        old_flow = flow;
+        flow += new_flow;
+        if (flow > size) flow = size; new_flow = flow - old_flow;
+        std::string curr = dest;
+        while (curr != src){
+            std::string prev = nodes.at(curr).pred;
+            auto it_prev_to_curr = std::find_if(nodes.at(prev).adj.begin(), nodes.at(prev).adj.end(), [curr](const Edge & e){return e.dest==stoi(curr);});
+            it_prev_to_curr->flow -= new_flow;
+            auto it_curr_to_prev = std::find_if(nodes.at(curr).adj.begin(), nodes.at(curr).adj.end(), [prev](const Edge & e){return e.dest==stoi(prev);});
+            if (it_curr_to_prev==(nodes.at(prev).adj.end())){
+                nodes.at(prev).adj.emplace_back(Edge{stoi(prev), it_prev_to_curr->duration, it_prev_to_curr->capacity, true, (int)it_prev_to_curr->capacity - it_prev_to_curr->flow});
+                it_curr_to_prev = std::find_if(nodes.at(curr).adj.begin(), nodes.at(curr).adj.end(), [prev](const Edge & e){return e.dest==stoi(prev);});
+            }
+            it_curr_to_prev->flow += new_flow;
+            curr = prev;
+        }
+        std::string v = dest;
+        std::list<Node> path{};
+        path.push_front(getNode(v));
+        while (v != src) {
+            v = nodes[v].pred;
+            path.push_front(getNode(v));
+        }
+        std::cout << "send " << new_flow << " people\n";
+        for (auto a: path){
+            if (a == path.back()) std::cout << a.id;
+            else std::cout << a.id << " -> ";
+        }
+        std::cout << "\n\n";
+        new_flow = bfsEK(src, dest);
+    }
+    if (!flow) std::cout << "Flow: " << flow << " - No path was found between the source and destination.\n";
+    else std::cout << "Flow: " << flow << "\n";
+
+    if (flow < size && flow != 0) std::cout << "The desired group dimension (" << size << ") was not possible to accomplish in the given path.\n";
     return flow;
 }
 

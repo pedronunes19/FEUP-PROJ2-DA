@@ -184,7 +184,7 @@ public:
     // double fordFulk(int s, int t, std::vector<int> &path);
 
     int edmondsKarp(const std::string src, const std::string dest);
-    int edmondsKarpLimit(const std::string src, const std::string dest, const int size);
+    int edmondsKarpLimit(const std::string src, const std::string dest, const unsigned long size);
 
     /**
      * @brief Applies the regular dijkstra algorithm. [O(|E| log(|V|))]
