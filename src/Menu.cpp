@@ -78,7 +78,7 @@ void Menu::showJointPlanMenu() {
             start = getUnsignedInput("Start:", 0, company.getDatasetMax());
             end = getUnsignedInput("End:", 0, company.getDatasetMax());
             path = company.maximizeJointAny(std::to_string(start), std::to_string(end), cap);
-            if (!path.size()) {
+            if (path.empty()) {
                 std::cout << "No path found!" << std::endl;
                 utils::file::waitForEnter();
                 MOpt = MAIN_MENU;
@@ -99,7 +99,7 @@ void Menu::showJointPlanMenu() {
             end = getUnsignedInput("End:", 1, company.getDatasetMax());
             company.minimizeJointTrans(std::to_string(start), std::to_string(end), path, path2, cap);
 
-            if (!path.size()) {
+            if (path.empty()) {
                 std::cout << "No path found when maximizing group dimension!" << std::endl;
             } else {
                 std::cout << "Maximizing group dimensions (max: "<< cap << "):" << std::endl;
@@ -108,8 +108,8 @@ void Menu::showJointPlanMenu() {
                 }
             }
 
-            if (!path2.size()) {
-                std::cout << "No path found when minizing vehicle changes!" << std::endl;
+            if (path2.empty()) {
+                std::cout << "No path found when minimizing vehicle changes!" << std::endl;
             } else {
                 std::cout << "Minimizing vehicle changes:" << std::endl;
                 for (auto const& j : path2) {
@@ -117,7 +117,7 @@ void Menu::showJointPlanMenu() {
                 }
             }
 
-            if (path.size() == path2.size()) {
+            if ((path.size() == path2.size()) && !(path.empty() || path2.empty())) {
                 std::cout << "The paths found have the same amount of vehicle changes! We recommend the one maximizing the group dimensions!" << std::endl;
             }
 

@@ -88,6 +88,13 @@ struct Node {
      */
     int flow{};
 
+    friend bool operator==(const Node& lhs, const Node& rhs){
+        return lhs.id == rhs.id;
+    };
+
+    friend bool operator!=(const Node& lhs, const Node& rhs){
+        return lhs.id != rhs.id;
+    };
 };
 
 /**
@@ -146,7 +153,7 @@ public:
      */
     Node &getNode(std::string id) { return nodes[id]; };
 
-    int getDatasetMax();
+    int getDatasetMax() const;
 
     /**
      * @brief Populates this graph with info from files and by foot edges.

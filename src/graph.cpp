@@ -7,7 +7,7 @@
 #include "../include/constants.h"
 #include "../include/graph.h"
 
-int Graph::getDatasetMax() {
+int Graph::getDatasetMax() const {
     return dataset_max;
 }
 
@@ -148,7 +148,8 @@ int Graph::edmondsKarpLimit(const std::string src, const std::string dest, const
         }
     }
 
-    while (new_flow = bfsEK(src, dest) && flow < size) {
+    new_flow = bfsEK(src, dest) && flow < size;
+    while (new_flow) {
         flow += new_flow;
         std::string curr = dest;
         while (curr != src){
@@ -172,9 +173,11 @@ int Graph::edmondsKarpLimit(const std::string src, const std::string dest, const
         }
         std::cout << "send " << new_flow << " people\n";
         for (auto a: path){
-            std::cout << a.id << " -> ";
+            if (a == path.back()) std::cout << a.id;
+            else std::cout << a.id << " -> ";
         }
         std::cout << "\n\n";
+        new_flow = bfsEK(src, dest) && flow < size;
     }
     std::cout << flow << "\n";
     return flow;
