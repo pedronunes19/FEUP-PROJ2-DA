@@ -185,7 +185,7 @@ public:
 
     int edmondsKarp(const std::string src, const std::string dest);
     int edmondsKarpLimit(const std::string src, const std::string dest, const unsigned long size);
-
+    int edmondsKarpMaxPath(const std::string src, const std::string dest);
     /**
      * @brief Applies the regular dijkstra algorithm. [O(|E| log(|V|))]
      *

@@ -39,6 +39,7 @@ void Graph::populate(std::string dataset) {
     nodes_num = std::stoi(parsedLine.at(0));
     dataset_max = nodes_num;
     addNodes(nodes_num);
+    std::cout << dataset_max << std::endl;
 
     while (!f.eof()) {
         getline(f, line);
@@ -61,6 +62,7 @@ void Graph::addNodes(const int num_nodes) {
 int Graph::bfsEK(const std::string &src, const std::string &dest) {
     for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i){
         (*i).second.visited = false;
+        (*i).second.dur = 0;
     }
 
     std::queue<std::string> q;
@@ -82,6 +84,7 @@ int Graph::bfsEK(const std::string &src, const std::string &dest) {
                     return new_flow;
                 }
                 nodes[w].flow = new_flow;
+                nodes[w].dur += e.duration;
                 e.flow = new_flow;
                 q.push(w);
             }
@@ -190,6 +193,74 @@ int Graph::edmondsKarpLimit(const std::string src, const std::string dest, const
     else std::cout << "Flow: " << flow << "\n";
 
     if (flow < size && flow != 0) std::cout << "The desired group dimension (" << size << ") was not possible to accomplish in the given path.\n";
+    return flow;
+}
+
+int Graph::edmondsKarpMaxPath(const std::string src, const std::string dest) {
+    int flow = 0;
+    int new_flow;
+    int max_path = 0;
+    std::list<std::list<Node>> path_list;
+
+    for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i){
+        (*i).second.duration = 0;
+        auto &adj = (*i).second.adj;
+        for (auto j{adj.begin()}, end1{adj.end()}; j != end1; ++j){
+            if (!(*j).residual) (*j).flow = (*j).capacity;
+            else (*j).flow = 0;
+        }
+    }
+
+    new_flow = bfsEK(src, dest);
+    while (new_flow) {
+        flow += new_flow;
+        std::string curr = dest;
+        while (curr != src){
+            std::string prev = nodes.at(curr).pred;
+            auto it_prev_to_curr = std::find_if(nodes.at(prev).adj.begin(), nodes.at(prev).adj.end(), [curr](const Edge & e){return e.dest==stoi(curr);});
+            it_prev_to_curr->flow -= new_flow;
+            auto it_curr_to_prev = std::find_if(nodes.at(curr).adj.begin(), nodes.at(curr).adj.end(), [prev](const Edge & e){return e.dest==stoi(prev);});
+            if (it_curr_to_prev==(nodes.at(prev).adj.end())){
+                nodes.at(prev).adj.emplace_back(Edge{stoi(prev), it_prev_to_curr->duration, it_prev_to_curr->capacity, true, (int)it_prev_to_curr->capacity - it_prev_to_curr->flow});
+                it_curr_to_prev = std::find_if(nodes.at(curr).adj.begin(), nodes.at(curr).adj.end(), [prev](const Edge & e){return e.dest==stoi(prev);});
+            }
+            it_curr_to_prev->flow += new_flow;
+            curr = prev;
+        }
+        std::string v = dest;
+        std::list<Node> path{};
+        path.push_front(getNode(v));
+        while (v != src) {
+            v = nodes[v].pred;
+            path.push_front(getNode(v));
+        }
+        path_list.push_back(path);
+        std::cout << "send " << new_flow << " people\n";
+        for (auto a: path){
+            if (a == path.back()) std::cout << a.id;
+            else std::cout << a.id << " -> ";
+        }
+        std::cout << "\n\n";
+        new_flow = bfsEK(src, dest);
+    }
+    if (!flow) std::cout << "Flow: " << flow << " - No path was found between the source and destination.\n";
+    if (path_list.size() == 1) {
+        std::cout << "Only a single path found: The group stays together during the trip.\n";
+    }
+    else {
+        int i = 0;
+        int max_path_no;
+        for (auto a: path_list){
+            i++;
+            int path_duration = 0;
+            for (auto b: a){
+                path_duration += b.dur;
+            }
+            std::cout << "Path " << i << "- " << path_duration << "h" << std::endl;
+            if (max_path < path_duration) max_path = path_duration, max_path_no = i;
+        }
+        std::cout << "Regrouping will occur after " << max_path << " hours, which is the duration of the slowest path (" << max_path_no << ").\n";
+    }
     return flow;
 }
 

@@ -191,6 +191,11 @@ void Menu::showSeparatePlanMenu() {
             MOpt = MAIN_MENU;
             break;
         case 4:
+            start = getUnsignedInput("Start:", 0, company.getDatasetMax());
+            end = getUnsignedInput("End:", 0, company.getDatasetMax());
+            company.ekMaxPath(std::to_string(start), std::to_string(end));
+            utils::file::waitForEnter();
+            MOpt = MAIN_MENU;
             break;
         case 5:
             break;
