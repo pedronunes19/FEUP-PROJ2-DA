@@ -3,7 +3,7 @@
 
 #include <string>
 
-const std::string NORMAL_DATASET_1 = "../resources/Tests_B/in01_b.txt";
+const std::string NORMAL_DATASET_1 = "../resources/Tests/in01.txt";
 const std::string NORMAL_DATASET_2 = "../resources/Tests/in02.txt";
 const std::string NORMAL_DATASET_3 = "../resources/Tests/in03.txt";
 const std::string NORMAL_DATASET_4 = "../resources/Tests/in04.txt";

@@ -15,6 +15,7 @@ enum MenuOptions {
     MAIN_MENU,
     JOINT_PLAN,
     SEPARATE_PLAN,
+    CHANGE_DATASET,
     EXIT
 };
 
@@ -81,6 +82,8 @@ public:
     void showSeparatePlanMenu();
 
     void showExit();
+
+    void showChangeDatasetMenu();
 };
 
 #endif //DA_PROJ_2_MENU_H

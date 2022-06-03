@@ -43,10 +43,11 @@ void Menu::showMainMenu() {
     std::string prompt = "Generic Company that does company stuff\n\n"
                          "[1] Joint Planning\n"
                          "[2] Separate Planning\n"
+                         "[3] Change Dataset\n"
                          "[0] Exit\n"
                          ">";
 
-    unsigned long option = getUnsignedInput(prompt, 0, 2);
+    unsigned long option = getUnsignedInput(prompt, 0, 3);
 
     switch(option) {
         case 1:
@@ -54,6 +55,9 @@ void Menu::showMainMenu() {
             break;
         case 2:
             MOpt = SEPARATE_PLAN;
+            break;
+        case 3:
+            MOpt = CHANGE_DATASET;
             break;
         case 0:
             MOpt = EXIT;
@@ -196,6 +200,50 @@ void Menu::showSeparatePlanMenu() {
     }
 }
 
+void Menu::showChangeDatasetMenu() {
+    utils::file::clearScreen();
+    std::string prompt = "Choose the dataset you want to load [1-10] (0 to go back): ";
+
+    unsigned long option = getUnsignedInput(prompt, 0, 10);
+
+    switch (option) {
+        case 1:
+            company.changeDataset(NORMAL_DATASET_1);
+            break;
+        case 2:
+            company.changeDataset(NORMAL_DATASET_2);
+            break;
+        case 3:
+            company.changeDataset(NORMAL_DATASET_3);
+            break;
+        case 4:
+            company.changeDataset(NORMAL_DATASET_4);
+            break;
+        case 5:
+            company.changeDataset(NORMAL_DATASET_5);
+            break;
+        case 6:
+            company.changeDataset(NORMAL_DATASET_6);
+            break;
+        case 7:
+            company.changeDataset(NORMAL_DATASET_7);
+            break;
+        case 8:
+            company.changeDataset(NORMAL_DATASET_8);
+            break;
+        case 9:
+            company.changeDataset(NORMAL_DATASET_9);
+            break;
+        case 10:
+            company.changeDataset(NORMAL_DATASET_10);
+            break;
+        case 0:
+            MOpt = MAIN_MENU;
+            return;
+    }
+    MOpt = MAIN_MENU;
+}
+
 void Menu::show() {
     switch (MOpt) {
         case MAIN_MENU:
@@ -206,6 +254,9 @@ void Menu::show() {
             break;
         case SEPARATE_PLAN:
             showSeparatePlanMenu();
+            break;
+        case CHANGE_DATASET:
+            showChangeDatasetMenu();
             break;
         case EXIT:
             throw Exit();
