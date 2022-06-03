@@ -79,12 +79,12 @@ int Graph::bfsEK(const std::string &src, const std::string &dest) {
             if (!nodes[w].visited && e.flow>0) {
                 nodes[w].pred = u;
                 nodes[w].visited = true;
+                nodes[w].dur = e.duration;
                 int new_flow = std::min(nodes[u].flow, e.flow);
                 if (w == dest) {
                     return new_flow;
                 }
                 nodes[w].flow = new_flow;
-                nodes[w].dur += e.duration;
                 e.flow = new_flow;
                 q.push(w);
             }
@@ -203,7 +203,7 @@ int Graph::edmondsKarpMaxPath(const std::string src, const std::string dest) {
     std::list<std::list<Node>> path_list;
 
     for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i){
-        (*i).second.duration = 0;
+        (*i).second.dur = 0;
         auto &adj = (*i).second.adj;
         for (auto j{adj.begin()}, end1{adj.end()}; j != end1; ++j){
             if (!(*j).residual) (*j).flow = (*j).capacity;
