@@ -145,7 +145,7 @@ void Menu::showSeparatePlanMenu() {
     std::string prompt = "[1] Find path by group size\n"
                          "[2] Find path by group size (incrementing)\n"
                          "[3] Find path for max group size\n"
-                         "[4] Find minimum path for group to be reunited\n"
+                         "[4] Find minimum time/path for group to be reunited at the destination\n"
                          "[5] Find wait time\n"
                          "[0] Back\n"
                          ">";

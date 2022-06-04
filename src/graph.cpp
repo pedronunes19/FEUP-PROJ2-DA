@@ -62,7 +62,6 @@ void Graph::addNodes(const int num_nodes) {
 int Graph::bfsEK(const std::string &src, const std::string &dest) {
     for (auto i{nodes.begin()}, end{nodes.end()}; i != end; ++i){
         (*i).second.visited = false;
-        (*i).second.dur = 0;
     }
 
     std::queue<std::string> q;
@@ -79,7 +78,7 @@ int Graph::bfsEK(const std::string &src, const std::string &dest) {
             if (!nodes[w].visited && e.flow>0) {
                 nodes[w].pred = u;
                 nodes[w].visited = true;
-                nodes[w].dur = e.duration;
+                nodes[w].dur = nodes[u].dur + e.duration;
                 int new_flow = std::min(nodes[u].flow, e.flow);
                 if (w == dest) {
                     return new_flow;
@@ -252,15 +251,36 @@ int Graph::edmondsKarpMaxPath(const std::string src, const std::string dest) {
         int max_path_no;
         for (auto a: path_list){
             i++;
-            int path_duration = 0;
-            for (auto b: a){
-                path_duration += b.dur;
-            }
+            int path_duration = a.back().dur;
             std::cout << "Path " << i << "- " << path_duration << "h" << std::endl;
             if (max_path < path_duration) max_path = path_duration, max_path_no = i;
         }
         std::cout << "Regrouping will occur after " << max_path << " hours, which is the duration of the slowest path (" << max_path_no << ").\n";
     }
+    bool first, equal_front = true, equal_back = true;
+    Node cmp_front, cmp_back, prev_front, prev_back;
+    while (equal_front || equal_back) {
+        first = true;
+        if (equal_front) prev_front = cmp_front;
+        if (equal_back) prev_back = cmp_back;
+        for (auto &i: path_list) {
+            if (first) {
+                if (equal_back) cmp_back = i.back();
+                if (equal_front) cmp_front = i.front();
+                first = false;
+                }
+            else {
+                if ((i.back() != cmp_back) && equal_back) {
+                    equal_back = false;
+                } if ((i.front() != cmp_front) && equal_front) {
+                    equal_front = false;
+                }
+            }
+            if (equal_front) i.pop_front();
+            if (equal_back) i.pop_back();
+        }
+    }
+    std::cout << "The group separates on node " << prev_front.id << " and regroups on node " << prev_back.id << ".\n";
     return flow;
 }
 
