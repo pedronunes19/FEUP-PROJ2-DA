@@ -145,13 +145,13 @@ void Menu::showSeparatePlanMenu() {
     std::string prompt = "[1] Find path by group size\n"
                          "[2] Find path by group size (incrementing)\n"
                          "[3] Find path for max group size\n"
-                         "[4] Find minimum time/path for group to be reunited at the destination\n"
-                         "[5] Find wait time\n"
+                         "[4] Find minimum time/node for the whole group to be reunited at\n"
+                         "[5] Find maximum wait time\n"
                          "[0] Back\n"
                          ">";
     unsigned long option = getUnsignedInput(prompt, 0, 5);
 
-    switch(option) {
+    switch (option) {
         case 1:
             start = getUnsignedInput("Start:", 0, company.getDatasetMax());
             end = getUnsignedInput("End:", 0, company.getDatasetMax());
@@ -193,11 +193,16 @@ void Menu::showSeparatePlanMenu() {
         case 4:
             start = getUnsignedInput("Start:", 0, company.getDatasetMax());
             end = getUnsignedInput("End:", 0, company.getDatasetMax());
-            company.ekMaxPath(std::to_string(start), std::to_string(end));
+            company.ekMaxPath(std::to_string(start), std::to_string(end), false);
             utils::file::waitForEnter();
             MOpt = MAIN_MENU;
             break;
         case 5:
+            start = getUnsignedInput("Start:", 0, company.getDatasetMax());
+            end = getUnsignedInput("End:", 0, company.getDatasetMax());
+            company.ekMaxPath(std::to_string(start), std::to_string(end), true);
+            utils::file::waitForEnter();
+            MOpt = MAIN_MENU;
             break;
         case 0:
             MOpt = MAIN_MENU;

@@ -39,7 +39,6 @@ void Graph::populate(std::string dataset) {
     nodes_num = std::stoi(parsedLine.at(0));
     dataset_max = nodes_num;
     addNodes(nodes_num);
-    std::cout << dataset_max << std::endl;
 
     while (!f.eof()) {
         getline(f, line);
@@ -195,7 +194,7 @@ int Graph::edmondsKarpLimit(const std::string src, const std::string dest, const
     return flow;
 }
 
-int Graph::edmondsKarpMaxPath(const std::string src, const std::string dest) {
+int Graph::edmondsKarpMaxPath(const std::string src, const std::string dest, bool waitTime) {
     int flow = 0;
     int new_flow;
     int max_path = 0;
@@ -242,9 +241,13 @@ int Graph::edmondsKarpMaxPath(const std::string src, const std::string dest) {
         std::cout << "\n\n";
         new_flow = bfsEK(src, dest);
     }
-    if (!flow) std::cout << "Flow: " << flow << " - No path was found between the source and destination.\n";
+    if (!flow) {
+        std::cout << "Flow: " << flow << " - No path was found between the source and destination.\n";
+        return flow;
+    }
     if (path_list.size() == 1) {
         std::cout << "Only a single path found: The group stays together during the trip.\n";
+        return flow;
     }
     else {
         int i = 0;
@@ -255,7 +258,24 @@ int Graph::edmondsKarpMaxPath(const std::string src, const std::string dest) {
             std::cout << "Path " << i << "- " << path_duration << "h" << std::endl;
             if (max_path < path_duration) max_path = path_duration, max_path_no = i;
         }
-        std::cout << "Regrouping will occur after " << max_path << " hours, which is the duration of the slowest path (" << max_path_no << ").\n";
+        std::cout << "Regrouping will occur after " << max_path << " hours, which is the duration of the slowest path.\n";
+    }
+    std::list<int> min_ids;
+    int wait_duration = 0;
+
+    if (waitTime) {
+        int path_id = 0;
+        int max_dur = 0;
+        int min_dur = INF;
+        for (auto &i: path_list) {
+            if (max_dur <= i.back().dur) max_dur = i.back().dur;
+            if (i.back().dur <= min_dur) min_dur = i.back().dur;
+        }
+        for (auto &i: path_list) {
+            path_id++;
+            if (i.back().dur == min_dur) min_ids.push_back(path_id);
+        }
+        wait_duration = max_dur - min_dur;
     }
     bool first, equal_front = true, equal_back = true;
     Node cmp_front, cmp_back, prev_front, prev_back;
@@ -264,15 +284,20 @@ int Graph::edmondsKarpMaxPath(const std::string src, const std::string dest) {
         if (equal_front) prev_front = cmp_front;
         if (equal_back) prev_back = cmp_back;
         for (auto &i: path_list) {
+            if (i.size() < 2) {
+                equal_front = false;
+                equal_back = false;
+                break;
+            }
             if (first) {
                 if (equal_back) cmp_back = i.back();
                 if (equal_front) cmp_front = i.front();
                 first = false;
-                }
-            else {
+            } else {
                 if ((i.back() != cmp_back) && equal_back) {
                     equal_back = false;
-                } if ((i.front() != cmp_front) && equal_front) {
+                }
+                if ((i.front() != cmp_front) && equal_front) {
                     equal_front = false;
                 }
             }
@@ -280,7 +305,26 @@ int Graph::edmondsKarpMaxPath(const std::string src, const std::string dest) {
             if (equal_back) i.pop_back();
         }
     }
-    std::cout << "The group separates on node " << prev_front.id << " and regroups on node " << prev_back.id << ".\n";
+    std::cout << "The group separates on node " << prev_front.id << " and regroups on node " << prev_back.id
+              << ".\n";
+
+    if (waitTime) {
+        if (min_ids.size() == path_list.size()){
+            std::cout << "Every path arrives at the destination at the same time.\n";
+        }
+        else if (min_ids.size() == 1){
+            std::cout << "The group on path " << min_ids.front() << " will have to wait " << wait_duration << "h (maximum wait duration) on node " << prev_back.id << ".\n";
+        }
+        else {
+            std::cout << "The groups on paths: ";
+            for (auto &i: min_ids) {
+                std::cout << i;
+                if (&i != &min_ids.back()) std:: cout << ", ";
+            }
+            std::cout << " will have to wait " << wait_duration << "h (maximum wait duration) on node " << prev_back.id << ".\n";
+
+        }
+    }
     return flow;
 }
 

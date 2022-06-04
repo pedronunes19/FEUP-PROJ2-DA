@@ -19,7 +19,7 @@ public:
     void minimizeJointTrans(std::string s, std::string t, std::list<Node> &path1, std::list<Node> &path2, int &cap);
     void ek(std::string s, std::string t);
     int ekLimit(std::string s, std::string t, unsigned long size);
-    void ekMaxPath(std::string s, std::string t);
+    void ekMaxPath(std::string s, std::string t, bool b);
     std::unordered_map<std::string, Node> getGraph();
 };
 
