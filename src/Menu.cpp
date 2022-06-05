@@ -79,8 +79,8 @@ void Menu::showJointPlanMenu() {
 
     switch(option) {
         case 1:
-            start = getUnsignedInput("Start:", 0, company.getDatasetMax());
-            end = getUnsignedInput("End:", 0, company.getDatasetMax());
+            start = getUnsignedInput("Start:", 1, company.getDatasetMax());
+            end = getUnsignedInput("End:", 1, company.getDatasetMax());
             path = company.maximizeJointAny(std::to_string(start), std::to_string(end), cap);
             if (path.empty()) {
                 std::cout << "No path found!" << std::endl;
@@ -90,11 +90,12 @@ void Menu::showJointPlanMenu() {
             }
 
             std::cout << "Maximizing group dimensions (max: "<< cap << "):" << std::endl;
-            for (auto const& i : path) {
-                std::cout << i.id << "\n";
+            for (auto const &a: path){
+                if (a == path.back()) std::cout << a.id;
+                else std::cout << a.id << " -> ";
             }
             
-            std::cout << std::flush;
+            std::cout << std::endl << std::flush;
             utils::file::waitForEnter();
             MOpt = MAIN_MENU;
             break;
@@ -107,25 +108,29 @@ void Menu::showJointPlanMenu() {
                 std::cout << "No path found when maximizing group dimension!" << std::endl;
             } else {
                 std::cout << "Maximizing group dimensions (max: "<< cap << "):" << std::endl;
-                for (auto const& i : path) {
-                    std::cout << i.id << "\n";
+                for (auto const &a: path){
+                    if (a == path.back()) std::cout << a.id;
+                    else std::cout << a.id << " -> ";
                 }
             }
+
+            std::cout << std::endl;
 
             if (path2.empty()) {
                 std::cout << "No path found when minimizing vehicle changes!" << std::endl;
             } else {
                 std::cout << "Minimizing vehicle changes:" << std::endl;
-                for (auto const& j : path2) {
-                    std::cout << j.id << "\n";
+                for (auto const &a: path2){
+                    if (a == path2.back()) std::cout << a.id;
+                    else std::cout << a.id << " -> ";
                 }
             }
 
             if ((path.size() == path2.size()) && !(path.empty() || path2.empty())) {
-                std::cout << "The paths found have the same amount of vehicle changes! We recommend the one maximizing the group dimensions!" << std::endl;
+                std::cout << std::endl << "The paths found have the same amount of vehicle changes! We recommend the one maximizing the group dimensions!" << std::endl;
             }
 
-            std::cout << std::flush;
+            std::cout << std::endl << std::flush;
             utils::file::waitForEnter();
             MOpt = MAIN_MENU;
             break;

@@ -61,29 +61,34 @@ public:
     bool inRange(unsigned long n, unsigned long min, unsigned long max);
 
     /**
-     * @brief Shows the administrator menu on screen
-     * @return User option (from the admin functionalities available)
+     * @brief Shows the main menu on screen
      */
     void showMainMenu();
 
     /**
-     * @brief Close the program
+     * @brief Calls the function to display the chosen menu.
      */
-    void endProgram();
-
     void show();
 
-    void jointPlan();
-
-    void separatePlan();
-
+    /**
+     * @brief Displays the joint plan menu (scenario 1).
+     */
     void showJointPlanMenu();
 
+    /**
+     * @brief Displays the separate plan menu (scenario 2).
+     */
     void showSeparatePlanMenu();
 
-    void showExit();
-
+    /**
+     * @brief Displays the Dataset changing menu.
+     */
     void showChangeDatasetMenu();
+
+    /**
+     * @brief Displays the exit menu.
+     */
+    void showExit();
 };
 
 #endif //DA_PROJ_2_MENU_H

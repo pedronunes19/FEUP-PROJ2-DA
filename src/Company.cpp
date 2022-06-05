@@ -10,22 +10,13 @@ Company::Company() {
 void Company::changeDataset(std::string dataset) {
     graph.populate(dataset);
 }
-/*
-double Company::graphFord(int s, int t, std::vector<int> &path) {
-    // return graph.fordFulk(s-1, t-1, path);
-    return 0;
-}
-*/
+
 std::list<Node> Company::maximizeJointAny(std::string s, std::string t, int &cap) {
     return graph.maximizeJointAny(s, t, cap);
 }
 
 int Company::getDatasetMax() {
     return graph.getDatasetMax();
-}
-
-std::unordered_map<std::string, Node> Company::getGraph() {
-    return graph.getNodes();
 }
 
 void Company::minimizeJointTrans(std::string s, std::string t, std::list<Node> &path1, std::list<Node> &path2, int &cap) {

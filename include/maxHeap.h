@@ -112,7 +112,7 @@ void MaxHeap<K, V>::increaseKey(const K &key, const V &value) {
     upHeap(i);
 }
 
-// remove and return key with smaller value
+// remove and return key with greater value
 template <class K, class V> K MaxHeap<K, V>::removeMax() {
     if (size == 0)
         return KEY_NOT_FOUND;

@@ -6,7 +6,6 @@ struct Edge;
 struct Node;
 
 #include "maxHeap.h"
-#include "minHeap.h"
 
 #include <deque>
 #include <iostream>
@@ -28,19 +27,19 @@ struct Edge {
      */
     int dest;
     /**
-     * @brief The distance between the two nodes.
+     * @brief The travel duration between the two nodes.
      */
     int duration;
     /**
-     * @brief The capacity between the two nodes.
+     * @brief The capacity (number of people transported) between the two nodes.
      */
     int capacity;
     /**
-     * @brief The capacity between the two nodes.
+     * @brief Indicates if the edge is part of a residual graph or not.
      */
     bool residual;
     /**
-     * @brief The capacity between the two nodes.
+     * @brief The current flow being transported between the two nodes. Always lower than or equal to the capacity.
      */
     int flow{};
 };
@@ -76,36 +75,37 @@ struct Node {
      */
     std::string pred{};
     /**
-     * @brief The distance between this node and its predecessor.
+     * @brief The capacity between this node and its predecessor.
      *
      * @note Set after running an algorithm.
      */
     int cappd{};
         /**
-     * @brief The distance between this node and its predecessor.
+     * @brief The current flow between this node and its predecessor. Always lower than or equal to the capacity.
      *
      * @note Set after running an algorithm.
      */
     int flow{};
 
+    /**
+     * @brief Overload of the equality operator to compare two Nodes by their id value.
+     * @param lhs The first Node.
+     * @param rhs The second Node.
+     * @return A boolean that indicates whether or not the two Nodes have an equal id.
+     */
     friend bool operator==(const Node& lhs, const Node& rhs){
         return lhs.id == rhs.id;
-    };
-
-    friend bool operator!=(const Node& lhs, const Node& rhs){
-        return lhs.id != rhs.id;
     };
 };
 
 /**
- * @brief A directed multigraph representing a public transit network.
+ * @brief A directed graph representing a public transit network.
  */
 class Graph {
     /**
      * @brief This graph's nodes.
      *
-     * The keys are each node's stop code and the values are the nodes
-     * themselves.
+     * @note The keys are each node's stop code and the values are the nodes themselves.
      */
     std::unordered_map<std::string, Node> nodes;
 
@@ -141,11 +141,6 @@ public:
                  const int &distance = 1.0);
 
     /**
-     * @return This graph's nodes.
-     */
-    std::unordered_map<std::string, Node>  getNodes() { return nodes; };
-
-    /**
      * @brief Get the node with the specified code.
      *
      * @param id The stop code.
@@ -153,6 +148,10 @@ public:
      */
     Node &getNode(std::string id) { return nodes[id]; };
 
+    /**
+     * @brief Get the maximum id value for a node in the current dataset.
+     * @return The maximum id value in the dataset.
+     */
     int getDatasetMax() const;
 
     /**
@@ -162,52 +161,95 @@ public:
      */
     void populate(std::string dataset = NORMAL_DATASET_1);
 
+    /**
+     * @brief Add the given amount of nodes to the graph.
+     *
+     * @param num_nodes The number of nodes.
+     */
     void addNodes(const int num_nodes);
 
     /**
-     * @brief Applies the bfs (breadth-first search) algorithm. [O(|V| + |E|)]
+     * @brief Applies the bfs (breadth-first search) algorithm used inside the Edmonds-Karp algorithm, that also calculates the duration ond flow of the path..
+     * @note Time Complexity: O(|V| + |E|); Space Complexity: O(|V|)
      *
      * @param src The code of the source node.
      * @param dest The code of the destination node.
-     */
-    void bfs(const std::string &src, const std::string &dest, std::vector<int> &path);
-
-    /**
-     * @brief Applies the bfs (breadth-first search) algorithm. [O(|V| + |E|)]
-     *
-     * @param src The code of the source node.
-     * @param dest The code of the destination node.
+     * @return The flow of the path.
      */
     int bfsEK(const std::string &src, const std::string &dest);
 
-    /* SHOULD PROBABLY REMOVE THIS */
-    // double fordFulk(int s, int t, std::vector<int> &path);
-
-    int edmondsKarp(const std::string src, const std::string dest);
-    int edmondsKarpLimit(const std::string src, const std::string dest, const unsigned long size);
-    int edmondsKarpMaxPath(const std::string src, const std::string dest, bool waitTime);
     /**
-     * @brief Applies the regular dijkstra algorithm. [O(|E| log(|V|))]
+     * @brief Applies the Edmonds-Karp algorithm.
+     * @note Time Complexity: O(|V| |E|^2); Space Complexity: O(|V| + |E|)
      *
      * @param src The code of the source node.
      * @param dest The code of the destination node.
-     * @param f The filter to use in the creation of the path.
+     * @return The flow of the path.
+     */
+    int edmondsKarp(const std::string src, const std::string dest);
+
+    /**
+     * @brief Applies the Edmonds-Karp algorithm with a maximum flow limit.
+     * @note Time Complexity: O(|V| |E|^2); Space Complexity: O(|V| + |E|)
+     *
+     * @param src The code of the source node.
+     * @param dest The code of the destination node.
+     * @param size The maximum flow limit.
+     * @return The flow of the path.
+     */
+    int edmondsKarpLimit(const std::string src, const std::string dest, const unsigned long size);
+
+    /**
+     * @brief Applies the Edmonds-Karp algorithm followed by a separation/regroup location and a possible maximum wait time calculation, the latter being dependant on a boolean value.
+     * @note Time Complexity: O(|V|*|E|^2); Space Complexity: O(|V| + |E|)
+     *
+     * @param src The code of the source node.
+     * @param dest The code of the destination node.
+     * @param waitTime A boolean that determines whether or not the maximum wait time is calculated.
+     * @return The flow of the path.
+     */
+    int edmondsKarpMaxPath(const std::string src, const std::string dest, bool waitTime);
+
+    /**
+     * @brief Applies the regular dijkstra algorithm.
+     * @note Time Complexity: O(|E| log(|V|)) Space Complexity: O(|V|)
+     *
+     * @param src The code of the source node.
+     * @param dest The code of the destination node.
      */
     void dijkstra(const std::string src, const std::string dest);
 
     /**
-     * @brief Applies the regular dijkstra algorithm. [O(|E| log(|V|))]
+     * @brief Applies the regular dijkstra algorithm, and builds a path with the highest capacity.
+     * @note Time Complexity: O(|E| log(|V|)) Space Complexity: O(|V|)
      *
      * @param src The code of the source node.
      * @param dest The code of the destination node.
-     * @param f The filter to use in the creation of the path.
+     * @param cap A variable to store the capacity of the calculated path.
+     * @return A list of nodes that represent the calculated path.
      */
-    void dijkstraTrans(const std::string src, const std::string dest);
-
     std::list<Node> maximizeJointAny(const std::string src, const std::string dest, int &cap);
 
+    /**
+     * @brief Applies the regular dijkstra algorithm, and builds two paths: One with the highest capacity and another one with the least amount of vehicle changes.
+     * @note Time Complexity: O(|E| log(|V|)) Space Complexity: O(|V|)
+     *
+     * @param src The code of the source node.
+     * @param dest The code of the destination node.
+     * @param path1 A variable to store the highest capacity path.
+     * @param path2 A variable to store the path with the least amount of vehicle changes.
+     * @param cap A variable to store the capacity of the first calculated path.
+     */
     void minimizeJointTrans(const std::string src, const std::string dest, std::list<Node> &path1, std::list<Node> &path2, int &cap);
 
+    /**
+     * @brief Applies the bfs (breadth-first search) algorithm.
+     * @note Time Complexity: O(|V| + |E|); Space Complexity: O(|V|)
+     *
+     * @param src The code of the source node.
+     * @param dest The code of the destination node.
+     * @return A boolean that represents the success/failure of the algorithm.
+     */
     bool bfs(const std::string src, const std::string dest);
 };
 
