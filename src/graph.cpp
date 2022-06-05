@@ -135,8 +135,8 @@ int Graph::edmondsKarp(const std::string src, const std::string dest) {
         std::cout << "\n\n";
         new_flow = bfsEK(src, dest);
     }
-    if (!flow) std::cout << "Flow: " << flow << " - No path was found between the source and destination.\n";
-    else std::cout << "Flow: " << flow << "\n";
+    //if (!flow) std::cout << "Flow: " << flow << " - No path was found between the source and destination.\n";
+    //else std::cout << "Flow: " << flow << "\n";
     return flow;
 }
 

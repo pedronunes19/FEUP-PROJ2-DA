@@ -1,4 +1,5 @@
 #include "../include/Menu.h"
+#include <chrono>
 
 unsigned long Menu::getUnsignedInput(std::string prompt, unsigned long min, unsigned long max) {
     std::string input;
@@ -78,10 +79,16 @@ void Menu::showJointPlanMenu() {
     unsigned long option = getUnsignedInput(prompt, 0, 2);
 
     switch(option) {
-        case 1:
+        case 1: {
             start = getUnsignedInput("Start:", 1, company.getDatasetMax());
             end = getUnsignedInput("End:", 1, company.getDatasetMax());
+            while (start == end){
+                end = getUnsignedInput("End:", 1, company.getDatasetMax());
+            }
+            auto startTime = std::chrono::high_resolution_clock::now();
             path = company.maximizeJointAny(std::to_string(start), std::to_string(end), cap);
+            auto stopTime = std::chrono::high_resolution_clock::now();
+            auto algo_duration = std::chrono::duration_cast<std::chrono::microseconds>(stopTime - startTime);
             if (path.empty()) {
                 std::cout << "No path found!" << std::endl;
                 utils::file::waitForEnter();
@@ -89,16 +96,18 @@ void Menu::showJointPlanMenu() {
                 break;
             }
 
-            std::cout << "Maximizing group dimensions (max: "<< cap << "):" << std::endl;
-            for (auto const &a: path){
+            std::cout << "Maximizing group dimensions (max: " << cap << "):" << std::endl;
+            for (auto const &a: path) {
                 if (a == path.back()) std::cout << a.id;
                 else std::cout << a.id << " -> ";
             }
-            
+
             std::cout << std::endl << std::flush;
+            std::cout << "\nAlgorithm Duration: " << algo_duration.count() << " microseconds" << std::endl;
             utils::file::waitForEnter();
             MOpt = MAIN_MENU;
             break;
+        }
         case 2:
             start = getUnsignedInput("Start:", 1, company.getDatasetMax());
             end = getUnsignedInput("End:", 1, company.getDatasetMax());
@@ -157,14 +166,20 @@ void Menu::showSeparatePlanMenu() {
     unsigned long option = getUnsignedInput(prompt, 0, 5);
 
     switch (option) {
-        case 1:
+        case 1: {
             start = getUnsignedInput("Start:", 0, company.getDatasetMax());
             end = getUnsignedInput("End:", 0, company.getDatasetMax());
             cap = getUnsignedInput("Group Size:", 1, INT32_MAX);
+            auto startTime = std::chrono::high_resolution_clock::now();
             company.ekLimit(std::to_string(start), std::to_string(end), cap);
+            auto stopTime = std::chrono::high_resolution_clock::now();
+            auto algo_duration = std::chrono::duration_cast<std::chrono::microseconds>(stopTime - startTime);
+
+            std::cout << "\nAlgorithm Duration: " << algo_duration.count() << " microseconds" << std::endl;
             utils::file::waitForEnter();
             MOpt = MAIN_MENU;
             break;
+        }
         case 2:
             start = getUnsignedInput("Start:", 0, company.getDatasetMax());
             end = getUnsignedInput("End:", 0, company.getDatasetMax());
