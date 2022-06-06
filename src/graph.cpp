@@ -294,10 +294,10 @@ int Graph::edmondsKarpMaxPath(const std::string src, const std::string dest, boo
                 if (equal_front) cmp_front = i.front();
                 first = false;
             } else {
-                if ((i.back() != cmp_back) && equal_back) {
+                if (!(i.back() == cmp_back) && equal_back) {
                     equal_back = false;
                 }
-                if ((i.front() != cmp_front) && equal_front) {
+                if (!(i.front() == cmp_front) && equal_front) {
                     equal_front = false;
                 }
             }
